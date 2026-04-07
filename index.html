@@ -618,6 +618,7 @@
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -690,7 +691,7 @@
         document.getElementById('closeHistoryBtn').onclick = () => modal.remove();
     }
 
-    // ==================== PASTAS COM DRAG AND DROP ====================
+    // ==================== PASTAS ====================
     function getFolderPath(folderId) {
         const pastas = getPastas();
         const path = [];
@@ -740,7 +741,6 @@
         }
         document.getElementById("folderTree").innerHTML = buildTree(null) || '<div style="padding:16px; color:#94a3b8;">Nenhuma pasta</div>';
         
-        // Drag and drop para mover pastas
         document.querySelectorAll('.folder-li[draggable="true"]').forEach(el => {
             el.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', 'folder_' + el.getAttribute('data-folder-id'));
@@ -801,7 +801,7 @@
         document.getElementById('cancelMove').onclick = () => modal.remove();
     }
     
-    // ==================== DOCUMENTOS COM DRAG AND DROP ====================
+    // ==================== DOCUMENTOS ====================
     let filters = { nome: '', tipo: '', criadoPor: '', modifiedBy: '' };
     function applyFilters(docs) {
         return docs.filter(doc => {
@@ -833,12 +833,11 @@
             docs.forEach(doc => {
                 const isImage = doc.tipo?.startsWith("image/");
                 const checked = selectedDocs.has(doc.id) ? 'checked' : '';
-                html += `<tr data-doc-id="${doc.id}" draggable="true"><td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}></td><td><strong>${doc.nome.length > 35 ? doc.nome.substring(0, 32) + '...' : doc.nome}</strong></td><td>${isImage ? '🖼️ Imagem' : '📄 Documento'}</td><td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td><td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}<\/td><td>${doc.criadoPor || doc.modifiedBy || "sistema"}<\/td><td>${doc.modifiedBy || "-"}<\/td><td class="action-buttons-cell"><div class="action-buttons-group"><button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button><button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button><button class="action-icon history-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Histórico">📖</button><a href="${doc.base64}" download="${doc.nome}" class="action-icon" title="Download">⬇️</a></div><\/td><\/tr>`;
+                html += `<tr data-doc-id="${doc.id}" draggable="true"><td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}></td><td><strong>${doc.nome.length > 35 ? doc.nome.substring(0, 32) + '...' : doc.nome}</strong></td><td>${isImage ? '🖼️ Imagem' : '📄 Documento'}</td><td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td><td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}</td><td>${doc.criadoPor || doc.modifiedBy || "sistema"}</td><td>${doc.modifiedBy || "-"}</td><td class="action-buttons-cell"><div class="action-buttons-group"><button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button><button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button><button class="action-icon history-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Histórico">📖</button><a href="${doc.base64}" download="${doc.nome}" class="action-icon" title="Download">⬇️</a></div></td></tr>`;
             });
-            html += `</tbody>${'</table>'}`;
+            html += `</tbody>${'茶'}`;
             document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
             
-            // Drag and drop para mover documentos entre pastas
             const rows = document.querySelectorAll('.docs-table tbody tr[draggable="true"]');
             rows.forEach(row => {
                 row.addEventListener('dragstart', (e) => {
@@ -890,7 +889,7 @@
     function updateMultiActionBar() { const bar = document.getElementById("multiActionBar"); const count = selectedDocs.size; document.getElementById("selectedCount").innerText = `${count} documento(s) selecionado(s)`; bar.classList.toggle("hidden", count === 0); }
     function showMoveDocsModal(docIds) { if (docIds.length === 0) return; const pastas = getPastas().filter(p => p.empresa === currentEmpresa); const modal = document.createElement('div'); modal.className = 'modal'; modal.innerHTML = `<div class="modal-content"><h3>Mover ${docIds.length} documento(s)</h3><div id="moveDocFolderList"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMoveDocs">Mover</button><button id="cancelMoveDocs">Cancelar</button></div></div>`; document.body.appendChild(modal); function buildOptions(parentId = null, level = 0) { let html = ''; pastas.filter(p => p.parentId === parentId).forEach(f => { html += `<div class="folder-option" data-id="${f.id}" style="padding-left:${level * 20 + 12}px">📁 ${f.nome}</div>${buildOptions(f.id, level + 1)}`; }); return html; } document.getElementById('moveDocFolderList').innerHTML = buildOptions(null, 0); document.querySelectorAll('.folder-option').forEach(opt => opt.addEventListener('click', function() { document.querySelectorAll('.folder-option').forEach(o => o.classList.remove('selected')); this.classList.add('selected'); })); document.getElementById('confirmMoveDocs').onclick = () => { const selected = document.querySelector('.folder-option.selected'); if (selected) moveDocumentsToFolder(docIds, parseInt(selected.getAttribute('data-id'))); modal.remove(); }; document.getElementById('cancelMoveDocs').onclick = () => modal.remove(); }
     
-    // ==================== CÂMERA ====================
+    // ==================== CÂMERA COM PDF CORRIGIDO ====================
     async function startCameraCapture() {
         cameraPages = [];
         if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); }
@@ -924,21 +923,32 @@
         
         modal.querySelector('#finishCaptureBtn').onclick = async () => {
             if (cameraPages.length === 0) { showToast("Capture pelo menos uma página"); return; }
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            for (let i = 0; i < cameraPages.length; i++) {
-                if (i > 0) pdf.addPage();
-                const imgData = cameraPages[i];
-                const imgProps = pdf.getImageProperties(imgData);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            
+            try {
+                // Usar jsPDF corretamente
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                
+                for (let i = 0; i < cameraPages.length; i++) {
+                    if (i > 0) pdf.addPage();
+                    const imgData = cameraPages[i];
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                }
+                
+                const pdfBlob = pdf.output('blob');
+                const fileName = `documento_camera_${Date.now()}.pdf`;
+                await uploadFile(new File([pdfBlob], fileName, { type: 'application/pdf' }));
+                
+                if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
+                modal.remove();
+                showToast("PDF criado e enviado com sucesso!");
+            } catch (error) {
+                console.error("Erro ao criar PDF:", error);
+                showToast("Erro ao criar PDF: " + error.message);
             }
-            const pdfBlob = pdf.output('blob');
-            const fileName = `documento_camera_${Date.now()}.pdf`;
-            await uploadFile(new File([pdfBlob], fileName, { type: 'application/pdf' }));
-            if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
-            modal.remove();
         };
         
         modal.querySelector('#cancelCaptureBtn').onclick = () => { if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; } modal.remove(); };
