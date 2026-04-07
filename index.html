@@ -14,8 +14,8 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Helvetica, Arial, sans-serif;
             background: #f1f5f9;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
         /* Login */
@@ -30,8 +30,8 @@
 
         .login-card {
             background: white;
-            border-radius: 28px;
-            padding: 40px;
+            border-radius: 20px;
+            padding: 32px 24px;
             width: 100%;
             max-width: 400px;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
@@ -45,11 +45,12 @@
 
         input, select, button {
             font-size: 14px;
-            border-radius: 12px;
+            border-radius: 8px;
             border: 1px solid #e2e8f0;
             padding: 10px 14px;
             transition: 0.2s;
             background: #fff;
+            width: 100%;
         }
 
         button {
@@ -64,47 +65,53 @@
             background: #e2e8f0;
         }
 
-        /* Main Layout */
+        /* Main Layout - Mobile First */
         .main-layout {
             display: flex;
+            flex-direction: column;
             height: 100vh;
             background: #f1f5f9;
         }
 
-        /* Sidebar */
+        /* Sidebar - Versão Mobile (inferior ou ocultável) */
         .sidebar {
-            width: 340px;
             background: white;
-            border-radius: 0 28px 28px 0;
+            border-radius: 0;
             display: flex;
             flex-direction: column;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            max-height: 45%;
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .sidebar-header {
-            padding: 20px 20px 12px;
+            padding: 12px 16px;
             border-bottom: 1px solid #eef2f6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .sidebar-header h2 {
-            font-size: 18px;
+            font-size: 16px;
             color: #1a4a6e;
         }
 
         .user-info {
             background: #f8fafc;
-            border-radius: 14px;
-            padding: 10px 12px;
-            margin-top: 12px;
-            font-size: 13px;
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 11px;
         }
 
-        /* Árvore de Pastas */
         .folder-tree-container {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 8px;
+            max-height: 200px;
         }
 
         .tree-node {
@@ -116,9 +123,10 @@
             align-items: center;
             padding: 6px 8px;
             margin: 2px 0;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.15s;
+            flex-wrap: wrap;
         }
 
         .tree-item-wrapper:hover {
@@ -146,7 +154,7 @@
 
         .folder-name {
             flex: 1;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             color: #1e293b;
         }
@@ -166,41 +174,37 @@
             background: #f1f5f9;
             border: none;
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 12px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-size: 11px;
             color: #1e293b;
         }
 
-        .icon-btn:hover {
-            background: #e2e8f0;
-        }
-
         .children-container {
-            margin-left: 24px;
+            margin-left: 20px;
         }
 
         .sidebar-footer {
-            padding: 14px 16px;
+            padding: 10px 12px;
             border-top: 1px solid #eef2f6;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .config-btn {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            border-radius: 12px;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 8px;
             background: #f1f5f9;
             border: none;
-            width: 100%;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             color: #1e293b;
-        }
-
-        .config-btn:hover {
-            background: #e2e8f0;
+            flex: 1;
+            justify-content: center;
         }
 
         /* Main Content */
@@ -209,20 +213,18 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            padding: 16px 20px 16px 16px;
+            padding: 12px;
         }
 
         /* Top Bar */
         .top-bar {
             background: white;
-            border-radius: 20px;
-            padding: 12px 20px;
-            margin-bottom: 16px;
+            border-radius: 16px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
+            flex-direction: column;
+            gap: 10px;
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
         }
 
@@ -231,7 +233,7 @@
             align-items: center;
             gap: 6px;
             flex-wrap: wrap;
-            font-size: 13px;
+            font-size: 11px;
             color: #1e293b;
         }
 
@@ -244,32 +246,41 @@
         .upload-group {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
         .upload-btn {
             background: #f1f5f9;
             color: #1e293b;
-            padding: 6px 14px;
-            font-size: 13px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 8px;
+            flex: 1;
+            text-align: center;
         }
 
-        .upload-btn:hover {
-            background: #e2e8f0;
+        .drag-message {
+            font-size: 10px;
+            color: #64748b;
+            background: #f8fafc;
+            padding: 4px 8px;
+            border-radius: 8px;
+            text-align: center;
         }
 
         .view-controls {
             display: flex;
             gap: 6px;
+            justify-content: flex-end;
         }
 
         .view-btn {
             background: #f1f5f9;
             border: none;
-            padding: 6px 14px;
-            border-radius: 12px;
+            padding: 5px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             color: #1e293b;
         }
 
@@ -281,12 +292,12 @@
         /* Barra de Progresso */
         .progress-bar-container {
             background: white;
-            border-radius: 20px;
-            padding: 12px 20px;
-            margin-bottom: 16px;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 12px;
             display: none;
             align-items: center;
-            gap: 16px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
@@ -295,13 +306,13 @@
         }
 
         .progress-info {
-            font-size: 13px;
+            font-size: 11px;
             color: #1e293b;
         }
 
         .progress-bar-wrapper {
             flex: 1;
-            height: 8px;
+            height: 6px;
             background: #e2e8f0;
             border-radius: 10px;
             overflow: hidden;
@@ -318,17 +329,17 @@
         /* Barra de Ações Múltiplas */
         .multi-action-bar {
             background: #f1f5f9;
-            border-radius: 14px;
-            padding: 10px 20px;
+            border-radius: 10px;
+            padding: 8px 12px;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .multi-action-bar .selected-info {
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 500;
             color: #1e293b;
         }
@@ -337,15 +348,11 @@
             background: #f1f5f9;
             color: #1e293b;
             border: none;
-            padding: 6px 14px;
-            border-radius: 12px;
+            padding: 5px 10px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
-        }
-
-        .multi-action-btn:hover {
-            background: #e2e8f0;
         }
 
         .multi-action-btn.danger {
@@ -353,15 +360,11 @@
             color: #dc2626;
         }
 
-        .multi-action-btn.danger:hover {
-            background: #fecaca;
-        }
-
         /* Drag and Drop Area */
         .documents-container {
             flex: 1;
             background: white;
-            border-radius: 20px;
+            border-radius: 16px;
             overflow: auto;
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
             transition: all 0.2s;
@@ -372,163 +375,102 @@
             border: 2px dashed #2c7da0;
         }
 
-        /* Área de Upload com indicador de arraste */
-        .upload-area {
-            background: #f8fafc;
-            border: 2px dashed #cbd5e1;
-            border-radius: 16px;
-            padding: 16px;
-            text-align: center;
-            margin-bottom: 16px;
-            transition: all 0.2s;
-        }
-
-        .upload-area.drag-over {
-            background: #e0f2fe;
-            border-color: #2c7da0;
-        }
-
-        .upload-area p {
-            font-size: 13px;
-            color: #64748b;
-        }
-
-        /* Tabela Compacta */
+        /* Tabela Responsiva */
         .docs-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 11px;
+            display: block;
+            overflow-x: auto;
+        }
+
+        .docs-table thead, .docs-table tbody {
+            display: block;
+        }
+
+        .docs-table tr {
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #f0f2f5;
+            padding: 8px;
+        }
+
+        .docs-table th, .docs-table td {
+            flex: 1;
+            min-width: 80px;
+            padding: 4px 6px;
+            text-align: left;
         }
 
         .docs-table th {
-            text-align: left;
-            padding: 10px 12px;
             background: #fafcff;
-            border-bottom: 1px solid #eef2f6;
             font-weight: 600;
             color: #475569;
-            position: sticky;
-            top: 0;
-            background: white;
-            font-size: 12px;
+            font-size: 10px;
         }
 
-        .docs-table td {
-            padding: 8px 12px;
-            border-bottom: 1px solid #f0f2f5;
-            vertical-align: middle;
-        }
-
-        .docs-table tr:hover {
-            background: #fafcff;
-        }
-
-        .docs-table tr.drag-over {
-            background: #dbeafe;
-        }
-
-        .doc-checkbox {
-            width: 16px;
-            height: 16px;
-            cursor: pointer;
-        }
-
-        /* Ações na mesma linha sem quebra */
         .action-buttons-cell {
             white-space: nowrap;
-            width: 1%;
         }
 
         .action-buttons-group {
             display: flex;
             gap: 4px;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
         }
 
-        /* Grid View */
+        /* Grid View Responsivo */
         .docs-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 14px;
-            padding: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            padding: 12px;
         }
 
         .grid-card {
             background: white;
             border: 1px solid #eef2f6;
-            border-radius: 16px;
-            padding: 12px;
+            border-radius: 12px;
+            padding: 10px;
             transition: all 0.2s;
             cursor: pointer;
             position: relative;
         }
 
-        .grid-card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
         .grid-card .doc-checkbox {
             position: absolute;
-            top: 8px;
-            left: 8px;
+            top: 6px;
+            left: 6px;
+            width: 14px;
+            height: 14px;
         }
 
         .grid-preview {
             width: 100%;
-            height: 100px;
+            height: 80px;
             background: #f8fafc;
-            border-radius: 12px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            margin-bottom: 10px;
+            font-size: 32px;
+            margin-bottom: 8px;
         }
 
         .action-icon {
             background: #f1f5f9;
             border: none;
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-size: 12px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-size: 11px;
             color: #1e293b;
             display: inline-flex;
             align-items: center;
             justify-content: center;
         }
 
-        .action-icon:hover {
-            background: #e2e8f0;
-        }
-
-        /* Modal de Histórico */
-        .history-modal {
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            padding: 12px;
-            border-bottom: 1px solid #eef2f6;
-            font-size: 13px;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .history-date {
-            color: #2c7da0;
-            font-weight: 500;
-        }
-
-        .history-action {
-            margin-top: 4px;
-            color: #475569;
-        }
-
-        /* Modais */
+        /* Modais Responsivos */
         .modal {
             position: fixed;
             top: 0;
@@ -541,34 +483,26 @@
             justify-content: center;
             z-index: 3000;
             backdrop-filter: blur(4px);
+            padding: 16px;
         }
 
         .modal-content {
             background: white;
-            border-radius: 24px;
-            padding: 24px;
-            max-width: 90%;
-            width: 500px;
-            max-height: 80vh;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 95%;
+            width: 450px;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
         .folder-option {
             padding: 8px 12px;
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 8px;
             margin: 2px 0;
-            font-size: 13px;
+            font-size: 12px;
             color: #1e293b;
-        }
-
-        .folder-option:hover {
-            background: #e0e7ff;
-        }
-
-        .folder-option.selected {
-            background: #2c7da0;
-            color: white;
         }
 
         .fullscreen-viewer {
@@ -585,22 +519,23 @@
         }
 
         .fullscreen-viewer img {
-            max-width: 90%;
-            max-height: 90%;
+            max-width: 95%;
+            max-height: 95%;
             object-fit: contain;
         }
 
         .toast {
             position: fixed;
-            bottom: 24px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
             background: #1e293b;
             color: white;
-            padding: 10px 20px;
+            padding: 10px 16px;
             border-radius: 40px;
             z-index: 5000;
-            font-size: 13px;
+            font-size: 12px;
+            text-align: center;
             animation: fadeOut 3s forwards;
         }
 
@@ -614,29 +549,137 @@
             display: none;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
+        .history-item {
+            padding: 8px;
+            border-bottom: 1px solid #eef2f6;
+            font-size: 11px;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
+        .history-date {
+            color: #64748b;
+            font-size: 10px;
         }
 
-        @media (max-width: 900px) {
-            .sidebar { width: 280px; }
-            .docs-table th, .docs-table td { padding: 6px 8px; }
-            .action-buttons-group { gap: 2px; }
-            .action-icon { padding: 3px 6px; font-size: 11px; }
+        /* Desktop */
+        @media (min-width: 768px) {
+            .main-layout {
+                flex-direction: row;
+            }
+
+            .sidebar {
+                width: 300px;
+                max-height: 100vh;
+                border-radius: 0 20px 20px 0;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+            }
+
+            .sidebar-header {
+                padding: 20px 20px 12px;
+            }
+
+            .sidebar-header h2 {
+                font-size: 18px;
+            }
+
+            .user-info {
+                font-size: 13px;
+            }
+
+            .folder-tree-container {
+                max-height: none;
+                padding: 12px;
+            }
+
+            .folder-name {
+                font-size: 13px;
+            }
+
+            .sidebar-footer {
+                padding: 14px 16px;
+                flex-direction: column;
+            }
+
+            .top-bar {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                padding: 12px 20px;
+            }
+
+            .breadcrumb-area {
+                font-size: 13px;
+            }
+
+            .upload-group {
+                flex-wrap: nowrap;
+            }
+
+            .drag-message {
+                font-size: 11px;
+            }
+
+            .docs-table {
+                display: table;
+            }
+
+            .docs-table thead, .docs-table tbody {
+                display: table-row-group;
+            }
+
+            .docs-table tr {
+                display: table-row;
+                padding: 0;
+            }
+
+            .docs-table th, .docs-table td {
+                display: table-cell;
+                padding: 10px 12px;
+            }
+
+            .docs-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 14px;
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 24px 20px;
+            }
+
+            .login-card h1 {
+                font-size: 24px;
+            }
+
+            .upload-btn {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+
+            .action-icon {
+                padding: 3px 5px;
+                font-size: 10px;
+            }
+
+            .grid-card {
+                padding: 8px;
+            }
+
+            .grid-preview {
+                height: 70px;
+                font-size: 28px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div id="app"></div>
@@ -667,6 +710,7 @@
     let currentUser = null, currentEmpresa = "", currentFolderId = null;
     let viewMode = "list";
     let selectedDocs = new Set();
+    let cameraPages = [];
 
     function showToast(msg) {
         let existing = document.querySelector(".toast");
@@ -685,7 +729,49 @@
         return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
     }
 
-    // ==================== PASTAS COM EXPANSÃO ====================
+    function addHistory(docId, action, details) {
+        let docs = getDocumentos();
+        const doc = docs.find(d => d.id === docId);
+        if (doc) {
+            if (!doc.history) doc.history = [];
+            doc.history.push({
+                date: new Date().toISOString(),
+                user: currentUser.username,
+                action: action,
+                details: details
+            });
+            saveDocumentos(docs);
+        }
+    }
+
+    function showHistoryModal(docId, docName) {
+        const docs = getDocumentos();
+        const doc = docs.find(d => d.id === docId);
+        if (!doc) return;
+        
+        const history = doc.history || [];
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3 style="margin-bottom:16px; font-size:16px;">📖 Histórico: ${docName}</h3>
+                <div class="history-list">
+                    ${history.length === 0 ? '<div style="padding:20px; text-align:center; color:#94a3b8;">Nenhum registro encontrado</div>' : 
+                        history.map(h => `<div class="history-item">
+                            <div><strong>${h.action}</strong></div>
+                            <div>${h.details}</div>
+                            <div class="history-date">👤 ${h.user} • ${new Date(h.date).toLocaleString()}</div>
+                        </div>`).join('')
+                    }
+                </div>
+                <button id="closeHistoryBtn" style="margin-top:20px; width:100%; background:#f1f5f9;">Fechar</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('closeHistoryBtn').onclick = () => modal.remove();
+    }
+
+    // ==================== PASTAS ====================
     function getFolderPath(folderId) {
         const pastas = getPastas();
         const path = [];
@@ -757,7 +843,7 @@
         }
         
         const rootHtml = buildTree(null);
-        document.getElementById("folderTree").innerHTML = rootHtml || '<div style="padding:16px; color:#94a3b8; font-size:13px;">Nenhuma pasta</div>';
+        document.getElementById("folderTree").innerHTML = rootHtml || '<div style="padding:16px; color:#94a3b8; font-size:12px;">Nenhuma pasta</div>';
         
         document.querySelectorAll('.expand-icon').forEach(el => {
             if (el.getAttribute('data-expand')) {
@@ -842,7 +928,7 @@
         const pastas = getPastas().filter(p => p.empresa === currentEmpresa && p.id !== folderId);
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3 style="margin-bottom:16px;">Mover Pasta</h3><div id="folderSelectList" style="max-height:300px; overflow-y:auto;"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMove" style="background:#f1f5f9; color:#1e293b;">Mover</button><button id="cancelMove" style="background:#f1f5f9;">Cancelar</button></div></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3 style="margin-bottom:16px; font-size:16px;">Mover Pasta</h3><div id="folderSelectList" style="max-height:300px; overflow-y:auto;"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMove" style="background:#f1f5f9;">Mover</button><button id="cancelMove" style="background:#f1f5f9;">Cancelar</button></div></div>`;
         document.body.appendChild(modal);
         
         function buildOptions(parentId = null, level = 0) {
@@ -868,57 +954,16 @@
     }
     
     // ==================== DOCUMENTOS ====================
-    function addDocumentHistory(docId, action, userName) {
-        let docs = getDocumentos();
-        const doc = docs.find(d => d.id === docId);
-        if (doc) {
-            if (!doc.history) doc.history = [];
-            doc.history.push({
-                date: new Date().toISOString(),
-                action: action,
-                user: userName
-            });
-            saveDocumentos(docs);
-        }
-    }
-    
-    function showDocumentHistory(doc) {
-        const modal = document.createElement('div');
-        modal.className = 'modal';
-        let historyHtml = '<div class="history-modal">';
-        if (doc.history && doc.history.length > 0) {
-            [...doc.history].reverse().forEach(h => {
-                historyHtml += `
-                    <div class="history-item">
-                        <div class="history-date">📅 ${new Date(h.date).toLocaleString()}</div>
-                        <div class="history-action">✏️ ${h.action}</div>
-                        <div style="font-size:11px; color:#64748b;">👤 ${h.user}</div>
-                    </div>
-                `;
-            });
-        } else {
-            historyHtml += '<div style="padding:20px; text-align:center; color:#94a3b8;">Nenhum histórico disponível</div>';
-        }
-        historyHtml += '</div>';
-        
-        modal.innerHTML = `<div class="modal-content">
-            <h3 style="margin-bottom:16px;">📋 Histórico: ${doc.nome}</h3>
-            ${historyHtml}
-            <button id="closeHistoryBtn" style="margin-top:20px; width:100%; background:#f1f5f9;">Fechar</button>
-        </div>`;
-        document.body.appendChild(modal);
-        document.getElementById('closeHistoryBtn').onclick = () => modal.remove();
-    }
-    
     function moveDocumentsToFolder(docIds, targetFolderId) {
         let docs = getDocumentos();
         docIds.forEach(id => {
             const doc = docs.find(d => d.id === id);
             if (doc) { 
+                const oldFolder = doc.pastaId;
                 doc.pastaId = targetFolderId; 
                 doc.modifiedBy = currentUser.username; 
                 doc.data = new Date().toISOString();
-                addDocumentHistory(id, `Movido para pasta ID ${targetFolderId}`, currentUser.username);
+                addHistory(id, "Movimentação", `Movido da pasta ID ${oldFolder} para pasta ID ${targetFolderId}`);
             }
         });
         saveDocumentos(docs);
@@ -945,8 +990,8 @@
                         <th>Tamanho</th>
                         <th>Criação</th>
                         <th>Criador</th>
-                        <th>Última Edição</th>
-                        <th style="width:1%; white-space:nowrap;">Ações</th>
+                        <th>Edição</th>
+                        <th style="white-space:nowrap;">Ações</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -955,26 +1000,25 @@
                 const checked = selectedDocs.has(doc.id) ? 'checked' : '';
                 html += `<tr data-doc-id="${doc.id}" draggable="true">
                     <td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}></td>
-                    <td><strong style="font-size:12px;">${doc.nome.length > 35 ? doc.nome.substring(0, 32) + '...' : doc.nome}</strong></td>
-                    <td>${isImage ? '🖼️ Imagem' : '📄 Documento'}</td>
+                    <td><strong style="font-size:11px;">${doc.nome.length > 30 ? doc.nome.substring(0, 27) + '...' : doc.nome}</strong></td>
+                    <td>${isImage ? '🖼️' : '📄'}</td>
                     <td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td>
                     <td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}</td>
                     <td>${doc.criadoPor || doc.modifiedBy || "sistema"}</td>
-                    <td>${new Date(doc.data).toLocaleString()}</td>
+                    <td>${new Date(doc.data).toLocaleDateString()}</td>
                     <td class="action-buttons-cell">
                         <div class="action-buttons-group">
                             <button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button>
                             <button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button>
-                            <button class="action-icon info-doc" data-id="${doc.id}" title="Histórico">ℹ️</button>
+                            <button class="action-icon history-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Histórico">📖</button>
                             <a href="${doc.base64}" download="${doc.nome}" class="action-icon" style="text-decoration:none;" title="Download">⬇️</a>
                         </div>
                     </td>
-                  </tr>`;
+                 </tr>`;
             });
-            html += `</tbody>${'</table>'}`;
+            html += `</tbody>点心`;
             document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
             
-            // Drag and drop para mover documentos entre pastas
             const rows = document.querySelectorAll('.docs-table tbody tr');
             rows.forEach(row => {
                 row.addEventListener('dragstart', (e) => {
@@ -997,12 +1041,12 @@
                 html += `<div class="grid-card" data-doc-id="${doc.id}" draggable="true">
                             <input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}>
                             <div class="grid-preview">${isImage ? '🖼️' : '📄'}</div>
-                            <div style="font-size:12px; font-weight:500;">${doc.nome.substring(0, 25)}</div>
-                            <div style="font-size:10px; color:#64748b;">${new Date(doc.data).toLocaleDateString()}</div>
-                            <div class="action-buttons-group" style="display:flex; gap:4px; margin-top:8px; justify-content:center;">
+                            <div style="font-size:11px; font-weight:500;">${doc.nome.substring(0, 20)}</div>
+                            <div style="font-size:9px; color:#64748b;">${new Date(doc.data).toLocaleDateString()}</div>
+                            <div class="action-buttons-group" style="display:flex; gap:3px; margin-top:6px; flex-wrap:wrap;">
                                 <button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}">✏️</button>
                                 <button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}">👁️</button>
-                                <button class="action-icon info-doc" data-id="${doc.id}" title="Histórico">ℹ️</button>
+                                <button class="action-icon history-doc" data-id="${doc.id}" data-name="${doc.nome}">📖</button>
                                 <a href="${doc.base64}" download="${doc.nome}" class="action-icon">⬇️</a>
                             </div>
                         </div>`;
@@ -1010,7 +1054,6 @@
             html += '</div>';
             document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
             
-            // Drag and drop para grid
             const cards = document.querySelectorAll('.grid-card');
             cards.forEach(card => {
                 card.addEventListener('dragstart', (e) => {
@@ -1021,7 +1064,6 @@
             });
         }
         
-        // Eventos comuns
         document.querySelectorAll('.doc-checkbox').forEach(cb => {
             cb.addEventListener('change', (e) => {
                 const id = parseInt(cb.getAttribute('data-id'));
@@ -1044,11 +1086,10 @@
                     let docs = getDocumentos();
                     const doc = docs.find(d => d.id === id);
                     if (doc) { 
-                        const oldNome = doc.nome;
                         doc.nome = newName.trim(); 
                         doc.modifiedBy = currentUser.username; 
                         doc.data = new Date().toISOString();
-                        addDocumentHistory(id, `Renomeado de "${oldNome}" para "${newName.trim()}"`, currentUser.username);
+                        addHistory(id, "Renomeação", `Nome alterado de "${oldName}" para "${newName.trim()}"`);
                         saveDocumentos(docs); 
                         renderDocuments(); 
                         showToast("Renomeado"); 
@@ -1073,12 +1114,11 @@
             });
         });
         
-        document.querySelectorAll('.info-doc').forEach(btn => {
+        document.querySelectorAll('.history-doc').forEach(btn => {
             btn.addEventListener('click', () => {
                 const id = parseInt(btn.getAttribute('data-id'));
-                const docs = getDocumentos();
-                const doc = docs.find(d => d.id === id);
-                if (doc) showDocumentHistory(doc);
+                const name = btn.getAttribute('data-name');
+                showHistoryModal(id, name);
             });
         });
     }
@@ -1111,7 +1151,7 @@
         const pastas = getPastas().filter(p => p.empresa === currentEmpresa);
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3 style="margin-bottom:16px;">Mover ${docIds.length} documento(s)</h3><div id="moveDocFolderList" style="max-height:300px; overflow-y:auto;"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMoveDocs" style="background:#f1f5f9;">Mover</button><button id="cancelMoveDocs" style="background:#f1f5f9;">Cancelar</button></div></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3 style="margin-bottom:16px; font-size:16px;">Mover ${docIds.length} documento(s)</h3><div id="moveDocFolderList" style="max-height:300px; overflow-y:auto;"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMoveDocs" style="background:#f1f5f9;">Mover</button><button id="cancelMoveDocs" style="background:#f1f5f9;">Cancelar</button></div></div>`;
         document.body.appendChild(modal);
         
         function buildOptions(parentId = null, level = 0) {
@@ -1136,7 +1176,113 @@
         document.getElementById('cancelMoveDocs').onclick = () => modal.remove();
     }
     
-    // Upload com barra de progresso e drag-and-drop externo
+    async function startCameraCapture() {
+        cameraPages = [];
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        video.play();
+        
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `
+            <div class="modal-content" style="width:95%; max-width:500px;">
+                <h3 style="font-size:16px;">📸 Capturar Páginas</h3>
+                <video id="cameraVideo" style="width:100%; border-radius:8px; margin:10px 0;"></video>
+                <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button id="capturePageBtn" style="flex:1;">📷 Capturar</button>
+                    <button id="finishCaptureBtn" style="background:#10b981; flex:1;">✅ Finalizar PDF</button>
+                </div>
+                <div id="pagesList" style="max-height:120px; overflow-y:auto; margin:10px 0; font-size:11px;"></div>
+                <button id="cancelCaptureBtn" style="width:100%;">Cancelar</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        const videoElement = modal.querySelector('#cameraVideo');
+        videoElement.srcObject = stream;
+        
+        const updatePagesList = () => {
+            const list = modal.querySelector('#pagesList');
+            list.innerHTML = cameraPages.map((_, idx) => `<div>📄 Página ${idx + 1} capturada</div>`).join('');
+        };
+        
+        modal.querySelector('#capturePageBtn').onclick = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            canvas.getContext('2d').drawImage(videoElement, 0, 0);
+            cameraPages.push(canvas.toDataURL('image/jpeg', 0.9));
+            updatePagesList();
+            showToast(`Página ${cameraPages.length} capturada`);
+        };
+        
+        modal.querySelector('#finishCaptureBtn').onclick = async () => {
+            if (cameraPages.length === 0) {
+                showToast("Capture pelo menos uma página");
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            for (let i = 0; i < cameraPages.length; i++) {
+                if (i > 0) pdf.addPage();
+                const imgData = cameraPages[i];
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+            }
+            const pdfBlob = pdf.output('blob');
+            await uploadFile(new File([pdfBlob], `documento_camera_${Date.now()}.pdf`, { type: 'application/pdf' }));
+            modal.remove();
+            stream.getTracks().forEach(track => track.stop());
+        };
+        
+        modal.querySelector('#cancelCaptureBtn').onclick = () => {
+            modal.remove();
+            stream.getTracks().forEach(track => track.stop());
+        };
+    }
+    
+    async function uploadFile(file) {
+        if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return; }
+        
+        let base64Data, fileType = file.type, fileName = file.name;
+        if (file.type.startsWith("image/")) {
+            base64Data = await resizeImage(file, 1200);
+            fileType = "image/jpeg";
+            fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
+        } else {
+            base64Data = await readFileAsBase64(file);
+        }
+        if (base64Data) {
+            const docs = getDocumentos();
+            const newDoc = {
+                id: Date.now() + Math.random(),
+                nome: fileName,
+                base64: base64Data,
+                tipo: fileType,
+                pastaId: currentFolderId,
+                empresa: currentEmpresa,
+                data: new Date().toISOString(),
+                dataCriacao: new Date().toISOString(),
+                criadoPor: currentUser.username,
+                modifiedBy: currentUser.username,
+                tamanho: file.size,
+                history: [{
+                    date: new Date().toISOString(),
+                    user: currentUser.username,
+                    action: "Criação",
+                    details: `Documento "${fileName}" criado`
+                }]
+            };
+            docs.push(newDoc);
+            saveDocumentos(docs);
+            renderDocuments();
+            showToast("Documento enviado!");
+        }
+    }
+    
     async function uploadMultipleFilesWithProgress(files) {
         if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return; }
         if (!files || files.length === 0) return;
@@ -1152,7 +1298,7 @@
             const file = files[i];
             const percent = Math.round((i / files.length) * 100);
             progressFill.style.width = `${percent}%`;
-            progressText.innerText = `Processando: ${i + 1} de ${files.length} - ${file.name}`;
+            progressText.innerText = `Processando: ${i + 1} de ${files.length} - ${file.name.substring(0, 30)}`;
             
             let base64Data, fileType = file.type, fileName = file.name;
             if (file.type.startsWith("image/")) {
@@ -1164,9 +1310,8 @@
             }
             if (base64Data) {
                 const docs = getDocumentos();
-                const newId = Date.now() + Math.random();
                 docs.push({
-                    id: newId,
+                    id: Date.now() + Math.random(),
                     nome: fileName,
                     base64: base64Data,
                     tipo: fileType,
@@ -1177,7 +1322,12 @@
                     criadoPor: currentUser.username,
                     modifiedBy: currentUser.username,
                     tamanho: file.size,
-                    history: [{ date: new Date().toISOString(), action: "Documento criado", user: currentUser.username }]
+                    history: [{
+                        date: new Date().toISOString(),
+                        user: currentUser.username,
+                        action: "Criação",
+                        details: `Documento "${fileName}" criado`
+                    }]
                 });
                 saveDocumentos(docs);
                 uploaded++;
@@ -1197,7 +1347,6 @@
     
     function setupDragAndDrop() {
         const container = document.getElementById("docsContainer");
-        const uploadArea = document.getElementById("uploadArea");
         if (!container) return;
         
         container.addEventListener('dragover', (e) => {
@@ -1224,24 +1373,6 @@
                 }
             }
         });
-        
-        if (uploadArea) {
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('drag-over');
-            });
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('drag-over');
-            });
-            uploadArea.addEventListener('drop', async (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('drag-over');
-                const files = Array.from(e.dataTransfer.files);
-                if (files.length > 0) {
-                    await uploadMultipleFilesWithProgress(files);
-                }
-            });
-        }
     }
     
     function readFileAsBase64(file) {
@@ -1284,10 +1415,10 @@
     function renderAdminModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>⚙️ Administração</h3>
-            <h4 style="margin:12px 0 8px;">Empresas</h4><div id="adminEmpresasList" style="margin-bottom:12px;"></div>
+        modal.innerHTML = `<div class="modal-content"><h3 style="font-size:16px;">⚙️ Administração</h3>
+            <h4 style="margin:12px 0 8px; font-size:13px;">Empresas</h4><div id="adminEmpresasList" style="margin-bottom:12px; font-size:12px;"></div>
             <input type="text" id="newEmpresaName" placeholder="Nova empresa" style="width:100%; margin-bottom:8px;"><button id="addEmpresaBtn" style="width:100%; background:#f1f5f9;">Criar Empresa</button>
-            <h4 style="margin:20px 0 8px;">Usuários</h4><div id="adminUsersList" style="margin-bottom:12px;"></div>
+            <h4 style="margin:20px 0 8px; font-size:13px;">Usuários</h4><div id="adminUsersList" style="margin-bottom:12px; font-size:12px;"></div>
             <input type="text" id="newUserName" placeholder="Usuário" style="width:100%; margin-bottom:6px;">
             <input type="password" id="newUserPass" placeholder="Senha" style="width:100%; margin-bottom:6px;">
             <select id="newUserEmpresaSelect" style="width:100%; margin-bottom:8px;"></select>
@@ -1332,7 +1463,7 @@
                         <div class="user-info">👤 ${currentUser.username}<br>🏢 ${currentEmpresa}${isGlobalAdmin() ? ' ⭐ Admin' : ''}</div>
                     </div>
                     <div class="folder-tree-container">
-                        <div style="margin-bottom:12px;"><button id="newRootFolderBtn" style="background:#f1f5f9; color:#1e293b; width:100%; border-radius:12px;">+ Nova Pasta</button></div>
+                        <div style="margin-bottom:8px;"><button id="newRootFolderBtn" style="background:#f1f5f9; color:#1e293b; width:100%; border-radius:8px; padding:8px;">+ Nova Pasta</button></div>
                         <div id="folderTree"></div>
                     </div>
                     <div class="sidebar-footer">
@@ -1348,6 +1479,7 @@
                             <button id="galleryUploadBtn" class="upload-btn">🖼️ Galeria</button>
                             <button id="fileUploadBtn" class="upload-btn">📎 Arquivo</button>
                         </div>
+                        <div class="drag-message">📌 Arraste documento</div>
                         <div class="view-controls">
                             <button id="listViewBtn" class="view-btn ${viewMode === 'list' ? 'active' : ''}">📋 Lista</button>
                             <button id="gridViewBtn" class="view-btn ${viewMode === 'grid' ? 'active' : ''}">🔲 Grade</button>
@@ -1360,15 +1492,10 @@
                     </div>
                     
                     <div id="multiActionBar" class="multi-action-bar hidden">
-                        <span class="selected-info">✅ <span id="selectedCount">0</span> documento(s) selecionado(s)</span>
-                        <button id="batchMoveBtn" class="multi-action-btn">📂 Mover Selecionados</button>
-                        <button id="batchDeleteBtn" class="multi-action-btn danger">🗑️ Excluir Selecionados</button>
+                        <span class="selected-info">✅ <span id="selectedCount">0</span> documento(s)</span>
+                        <button id="batchMoveBtn" class="multi-action-btn">📂 Mover</button>
+                        <button id="batchDeleteBtn" class="multi-action-btn danger">🗑️ Excluir</button>
                         <button id="clearSelectionBtn" class="multi-action-btn">Limpar</button>
-                    </div>
-                    
-                    <div id="uploadArea" class="upload-area">
-                        <p>📁 Arraste documentos aqui ou clique nos botões acima</p>
-                        <p style="font-size:11px; margin-top:4px;">Suporte a imagens e PDFs</p>
                     </div>
                     
                     <div class="documents-container" id="docsContainer"></div>
@@ -1383,7 +1510,7 @@
         if (isGlobalAdmin()) document.getElementById("adminConfigBtn").onclick = () => renderAdminModal();
         
         const fileInput = document.getElementById("hiddenFileInput");
-        document.getElementById("cameraUploadBtn").onclick = () => { fileInput.setAttribute("capture", "environment"); fileInput.setAttribute("accept", "image/*"); fileInput.multiple = false; fileInput.click(); };
+        document.getElementById("cameraUploadBtn").onclick = () => startCameraCapture();
         document.getElementById("galleryUploadBtn").onclick = () => { fileInput.removeAttribute("capture"); fileInput.setAttribute("accept", "image/*"); fileInput.multiple = true; fileInput.click(); };
         document.getElementById("fileUploadBtn").onclick = () => { fileInput.removeAttribute("capture"); fileInput.setAttribute("accept", "image/*,application/pdf"); fileInput.multiple = true; fileInput.click(); };
         fileInput.onchange = async (e) => { if (fileInput.files.length) { await uploadMultipleFilesWithProgress(Array.from(fileInput.files)); fileInput.value = ""; } };
@@ -1402,12 +1529,12 @@
             <div class="login-container">
                 <div class="login-card">
                     <h1>📁 DocManager</h1>
-                    <p style="color:#64748b; margin-bottom:24px;">Multi-Empresa · Gestão Documental</p>
+                    <p style="color:#64748b; margin-bottom:24px; font-size:14px;">Multi-Empresa · Gestão Documental</p>
                     <input type="text" id="loginUser" placeholder="Usuário" style="width:100%; margin-bottom:12px;">
                     <input type="password" id="loginPass" placeholder="Senha" style="width:100%; margin-bottom:12px;">
                     <select id="loginEmpresa" style="width:100%; margin-bottom:20px;">${empresas.map(e => `<option value="${e}">${e}</option>`).join('')}</select>
                     <button id="doLogin" style="width:100%; background:#f1f5f9; color:#1e293b;">Entrar</button>
-                    <p style="margin-top:16px; font-size:12px; color:#94a3b8;">admin / admin123</p>
+                    <p style="margin-top:16px; font-size:11px; color:#94a3b8; text-align:center;">admin / admin123</p>
                 </div>
             </div>`;
         document.getElementById("doLogin").onclick = () => {
