@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>DocManager Pro - Gestão Documental Multi-Empresa</title>
+    <title>DocManager Pro - Gestão Documental</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -13,43 +13,29 @@
         }
 
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
 
+        /* Container principal */
         .app-container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: #f8fafc;
             border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
             overflow: hidden;
             min-height: 85vh;
-        }
-
-        /* Responsividade */
-        @media (max-width: 768px) {
-            body {
-                padding: 12px;
-            }
-            .app-container {
-                border-radius: 20px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 8px;
-            }
+            display: flex;
+            flex-direction: column;
         }
 
         /* Header */
         .header {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 20px 28px;
-            color: white;
+            padding: 18px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -58,8 +44,9 @@
         }
 
         .logo h1 {
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             font-weight: 700;
+            color: white;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -67,12 +54,13 @@
 
         .logo h1 i {
             color: #60a5fa;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
         }
 
         .logo p {
-            font-size: 0.8rem;
-            opacity: 0.8;
+            font-size: 0.7rem;
+            opacity: 0.7;
+            color: white;
             margin-top: 4px;
         }
 
@@ -84,10 +72,11 @@
         }
 
         .empresa-badge {
-            background: rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.15);
             padding: 8px 16px;
             border-radius: 40px;
             font-size: 0.85rem;
+            color: white;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -99,6 +88,7 @@
             border-radius: 40px;
             font-size: 0.7rem;
             font-weight: bold;
+            color: white;
         }
 
         .btn-icon {
@@ -120,291 +110,223 @@
             transform: translateY(-1px);
         }
 
-        /* Conteúdo principal */
-        .main-content {
-            padding: 24px;
-        }
-
-        /* Cards */
-        .card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-            transition: box-shadow 0.2s;
-        }
-
-        .card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        .card-header {
+        /* Layout principal - 2 colunas */
+        .main-layout {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e2e8f0;
+            flex: 1;
+            min-height: 70vh;
         }
 
-        .card-header h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #1e293b;
+        /* Sidebar esquerda - Pastas e Configurações */
+        .sidebar {
+            width: 320px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Área de pastas em árvore */
+        .folders-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Árvore de pastas */
+        .folder-tree {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .tree-node {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+        }
+
+        .tree-item:hover {
+            background: #f1f5f9;
+        }
+
+        .tree-item.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        .tree-item.active .folder-name {
+            color: white;
+        }
+
+        .tree-item-content {
             display: flex;
             align-items: center;
             gap: 10px;
+            flex: 1;
         }
 
-        .card-header h2 i {
-            color: #3b82f6;
+        .tree-item-content i {
+            width: 20px;
+            color: #eab308;
+        }
+
+        .tree-item.active .tree-item-content i {
+            color: white;
+        }
+
+        .folder-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .tree-actions {
+            display: none;
+            gap: 4px;
+        }
+
+        .tree-item:hover .tree-actions {
+            display: flex;
+        }
+
+        .tree-actions button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: #64748b;
+        }
+
+        .tree-actions button:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+
+        .children {
+            margin-left: 28px;
+        }
+
+        /* Área de configurações */
+        .settings-area {
+            border-top: 1px solid #e2e8f0;
+            padding: 16px 20px;
+            background: #f8fafc;
+        }
+
+        .settings-toggle {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 10px;
+            border-radius: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            color: #1e293b;
+            transition: all 0.2s;
+        }
+
+        .settings-toggle:hover {
+            background: #e2e8f0;
+        }
+
+        .settings-panel {
+            margin-top: 12px;
+            display: none;
+        }
+
+        .settings-panel.open {
+            display: block;
+        }
+
+        .settings-panel input, .settings-panel select {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 60px;
+            font-size: 0.85rem;
+        }
+
+        .settings-panel button {
+            width: 100%;
+            padding: 10px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* Área de documentos - lado direito */
+        .documents-area {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background: #f8fafc;
         }
 
         /* Breadcrumb */
         .breadcrumb {
-            background: #f1f5f9;
+            background: white;
             padding: 12px 18px;
-            border-radius: 16px;
+            border-radius: 20px;
             margin-bottom: 20px;
-            font-size: 0.85rem;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             gap: 8px;
+            font-size: 0.85rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .breadcrumb-item {
             cursor: pointer;
             color: #3b82f6;
             font-weight: 500;
-            transition: color 0.2s;
         }
 
         .breadcrumb-item:hover {
-            color: #1e40af;
             text-decoration: underline;
         }
 
-        /* Formulários */
-        .form-row {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .form-row input {
-            flex: 2;
-            padding: 12px 18px;
-            border: 1px solid #cbd5e1;
-            border-radius: 60px;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .form-row input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-        }
-
-        .form-row button {
-            flex: 1;
-            padding: 12px 20px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 60px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .form-row button:hover {
-            background: #2563eb;
-            transform: translateY(-1px);
-        }
-
-        /* Grid de pastas */
-        .folders-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-
-        .folder-card {
-            background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
-            border-radius: 20px;
-            padding: 16px;
-            transition: all 0.2s;
-            border: 1px solid #fde68a;
-            cursor: grab;
-        }
-
-        .folder-card:active {
-            cursor: grabbing;
-        }
-
-        .folder-card.drag-over {
-            border: 2px dashed #3b82f6;
-            background: #dbeafe;
-            transform: scale(1.02);
-        }
-
-        .folder-icon {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .folder-icon i {
-            color: #eab308;
-            font-size: 2.2rem;
-        }
-
-        .folder-name {
-            font-weight: 600;
-            color: #1e293b;
-            word-break: break-word;
-            margin-bottom: 12px;
-            font-size: 1rem;
-        }
-
-        .folder-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            flex-wrap: wrap;
-        }
-
-        .folder-actions button {
-            flex: 1;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .btn-enter { background: #3b82f6; color: white; }
-        .btn-enter:hover { background: #2563eb; transform: translateY(-1px); }
-        .btn-move { background: #f59e0b; color: white; }
-        .btn-move:hover { background: #d97706; }
-        .btn-delete { background: #ef4444; color: white; }
-        .btn-delete:hover { background: #dc2626; }
-
-        /* Documentos */
-        .documents-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .doc-item {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 14px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s;
-        }
-
-        .doc-item:hover {
-            background: #f1f5f9;
-            transform: translateX(4px);
-        }
-
-        .doc-info {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex: 2;
-        }
-
-        .doc-preview {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            object-fit: cover;
-            background: #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .doc-details {
-            flex: 1;
-        }
-
-        .doc-name {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 4px;
-        }
-
-        .doc-date {
-            font-size: 0.7rem;
-            color: #64748b;
-        }
-
-        .doc-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .doc-actions a, .doc-actions button {
-            padding: 8px 14px;
-            border-radius: 40px;
-            text-decoration: none;
-            font-size: 0.75rem;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-download { background: #10b981; color: white; }
-        .btn-download:hover { background: #059669; }
-        .btn-delete-doc { background: #ef4444; color: white; }
-
         /* Upload area */
-        .upload-area {
-            border: 2px dashed #cbd5e1;
-            border-radius: 20px;
-            padding: 24px;
+        .upload-card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
             text-align: center;
-            background: #faf5ff;
-            margin-bottom: 20px;
-            transition: all 0.2s;
-        }
-
-        .upload-area:hover {
-            border-color: #3b82f6;
-            background: #eff6ff;
         }
 
         .upload-buttons {
@@ -424,12 +346,97 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: all 0.2s;
         }
 
         .btn-camera { background: #3b82f6; color: white; }
         .btn-gallery { background: #8b5cf6; color: white; }
         .btn-file { background: #64748b; color: white; }
+
+        /* Tabela de documentos */
+        .documents-table {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 40px 1.5fr 1fr 0.8fr 0.8fr 0.8fr 120px;
+            background: #f1f5f9;
+            padding: 14px 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .doc-row {
+            display: grid;
+            grid-template-columns: 40px 1.5fr 1fr 0.8fr 0.8fr 0.8fr 120px;
+            padding: 14px 16px;
+            align-items: center;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .doc-row:hover {
+            background: #f8fafc;
+        }
+
+        .doc-preview {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .doc-name {
+            font-weight: 500;
+            color: #1e293b;
+            word-break: break-word;
+        }
+
+        .doc-meta {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .doc-actions button, .doc-actions a {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-share { background: #8b5cf6; color: white; }
+        .btn-delete { background: #ef4444; color: white; }
+        .btn-rename { background: #f59e0b; color: white; }
+        .btn-move-doc { background: #3b82f6; color: white; }
+        .btn-download { background: #10b981; color: white; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #94a3b8;
+        }
 
         /* Modal */
         .modal {
@@ -448,7 +455,7 @@
 
         .modal-content {
             background: white;
-            border-radius: 28px;
+            border-radius: 32px;
             padding: 28px;
             max-width: 500px;
             width: 100%;
@@ -459,13 +466,10 @@
         .modal-content h3 {
             margin-bottom: 20px;
             color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .folder-option {
-            padding: 12px 16px;
+            padding: 10px 14px;
             margin: 6px 0;
             cursor: pointer;
             border-radius: 12px;
@@ -484,74 +488,6 @@
             color: white;
         }
 
-        /* Login */
-        .login-container {
-            max-width: 450px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 32px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-
-        .login-card h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #1e293b;
-        }
-
-        .login-card input, .login-card select {
-            width: 100%;
-            padding: 14px 18px;
-            margin-bottom: 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: 60px;
-            font-size: 1rem;
-        }
-
-        .login-card button {
-            width: 100%;
-            padding: 14px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        /* Admin área */
-        .admin-section {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 24px;
-        }
-
-        .empresas-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .empresa-tag {
-            background: #3b82f6;
-            color: white;
-            padding: 6px 14px;
-            border-radius: 40px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 30px;
@@ -564,7 +500,6 @@
             z-index: 2000;
             font-size: 0.85rem;
             animation: fadeOut 3s forwards;
-            white-space: nowrap;
         }
 
         @keyframes fadeOut {
@@ -573,22 +508,27 @@
             100% { opacity: 0; visibility: hidden; }
         }
 
-        @media (max-width: 640px) {
-            .folders-grid {
-                grid-template-columns: 1fr;
+        @media (max-width: 1024px) {
+            .table-header, .doc-row {
+                grid-template-columns: 40px 1.5fr 1fr 0.8fr 0.8fr 0.8fr 120px;
+                font-size: 0.7rem;
             }
-            .doc-item {
+        }
+
+        @media (max-width: 768px) {
+            .main-layout {
                 flex-direction: column;
-                align-items: flex-start;
             }
-            .doc-actions {
+            .sidebar {
                 width: 100%;
-                justify-content: flex-end;
+                max-height: 300px;
             }
-            .toast {
-                white-space: normal;
-                text-align: center;
-                max-width: 90%;
+            .table-header {
+                display: none;
+            }
+            .doc-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
             }
         }
     </style>
@@ -598,10 +538,10 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-    // ==================== MODELO DE DADOS JSON ====================
+    // ==================== MODELO DE DADOS ====================
     function loadData() {
         if (!localStorage.getItem("empresas")) {
-            localStorage.setItem("empresas", JSON.stringify(["Matriz", "Filial"]));
+            localStorage.setItem("empresas", JSON.stringify(["Matriz"]));
         }
         if (!localStorage.getItem("users")) {
             localStorage.setItem("users", JSON.stringify([
@@ -629,6 +569,7 @@
     let currentEmpresa = "";
     let currentFolderId = null;
     let draggingFolderId = null;
+    let settingsOpen = false;
 
     function showToast(msg) {
         let existing = document.querySelector(".toast");
@@ -706,7 +647,30 @@
         showToast(`Pasta "${nome}" criada`);
     }
 
-    // Upload com redimensionamento
+    // Funções de documento
+    function renameDocument(docId, newName) {
+        if (!newName.trim()) return;
+        const docs = getDocumentos();
+        const doc = docs.find(d => d.id === docId);
+        if (doc) {
+            doc.nome = newName.trim();
+            saveDocumentos(docs);
+            render();
+            showToast("Documento renomeado");
+        }
+    }
+
+    function moveDocumentToFolder(docId, targetFolderId) {
+        const docs = getDocumentos();
+        const doc = docs.find(d => d.id === docId);
+        if (doc) {
+            doc.pastaId = targetFolderId;
+            saveDocumentos(docs);
+            render();
+            showToast("Documento movido");
+        }
+    }
+
     async function processFileUpload(file) {
         if (!currentFolderId && currentFolderId !== 0) { showToast("Selecione uma pasta"); return; }
         if (!file) return;
@@ -714,6 +678,7 @@
         let base64Data = null;
         let fileType = file.type;
         let fileName = file.name;
+        let fileSize = file.size;
         
         if (file.type.startsWith("image/")) {
             base64Data = await resizeImage(file, 1200);
@@ -730,8 +695,10 @@
                 nome: fileName,
                 base64: base64Data,
                 tipo: fileType,
+                tamanho: fileSize,
                 pastaId: currentFolderId,
                 empresa: currentEmpresa,
+                usuario: currentUser.username,
                 data: new Date().toISOString()
             });
             saveDocumentos(docs);
@@ -776,24 +743,11 @@
         });
     }
 
-    async function downloadFolderAsZip() {
-        const docs = getDocumentos().filter(d => d.pastaId === currentFolderId && d.empresa === currentEmpresa);
-        if (docs.length === 0) { showToast("Pasta vazia"); return; }
-        
-        const JSZip = window.JSZip;
-        const zip = new JSZip();
-        for (const doc of docs) {
-            const base64Data = doc.base64.split(',')[1] || doc.base64;
-            zip.file(doc.nome, base64Data, { base64: true });
-        }
-        const content = await zip.generateAsync({ type: "blob" });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(content);
-        const folderName = getPastas().find(p => p.id === currentFolderId)?.nome || "pasta";
-        link.download = `${folderName}.zip`;
-        link.click();
-        URL.revokeObjectURL(link.href);
-        showToast(`Download de ${docs.length} arquivo(s)`);
+    function formatFileSize(bytes) {
+        if (!bytes) return "0 KB";
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+        return (bytes / 1048576).toFixed(1) + " MB";
     }
 
     // Admin
@@ -821,23 +775,103 @@
         showToast(`Usuário ${username} criado`);
     }
 
+    // Renderização da árvore de pastas
+    function renderFolderTree(parentId = null, level = 0) {
+        const pastas = getPastas().filter(p => p.empresa === currentEmpresa && p.parentId === parentId);
+        let html = '<ul class="folder-tree" style="list-style:none;">';
+        
+        for (const pasta of pastas) {
+            const children = getPastas().filter(p => p.parentId === pasta.id);
+            const hasChildren = children.length > 0;
+            const isActive = currentFolderId === pasta.id;
+            
+            html += `
+                <li class="tree-node">
+                    <div class="tree-item ${isActive ? 'active' : ''}" data-folder-id="${pasta.id}">
+                        <div class="tree-item-content">
+                            <i class="fas ${hasChildren ? 'fa-folder-open' : 'fa-folder'}"></i>
+                            <span class="folder-name">${pasta.nome}</span>
+                        </div>
+                        <div class="tree-actions">
+                            <button class="move-folder-btn" data-id="${pasta.id}" title="Mover"><i class="fas fa-arrows-alt"></i></button>
+                            <button class="delete-folder-btn" data-id="${pasta.id}" title="Excluir"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    ${hasChildren ? `<div class="children">${renderFolderTree(pasta.id, level + 1)}</div>` : ''}
+                </li>
+            `;
+        }
+        html += '</ul>';
+        return html;
+    }
+
+    // Modal mover documento
+    function showMoveDocModal(docId, docName) {
+        const pastas = getPastas().filter(p => p.empresa === currentEmpresa);
+        const modal = document.createElement("div");
+        modal.className = "modal";
+        
+        function buildOptions(parentId = null, level = 0) {
+            const children = pastas.filter(p => p.parentId === parentId);
+            let html = "";
+            for (const p of children) {
+                html += `<div class="folder-option" data-id="${p.id}" style="padding-left: ${level * 20}px">
+                            <i class="fas fa-folder"></i> ${p.nome}
+                        </div>`;
+                html += buildOptions(p.id, level + 1);
+            }
+            return html;
+        }
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3><i class="fas fa-folder-open"></i> Mover: ${docName}</h3>
+                <div class="folder-option" data-id="null"><i class="fas fa-home"></i> Raiz da Empresa</div>
+                ${buildOptions(null, 1)}
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="confirmMoveDocBtn" style="flex:1; background:#10b981;"><i class="fas fa-check"></i> Mover</button>
+                    <button id="cancelMoveDocBtn" style="flex:1; background:#ef4444;"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        document.querySelectorAll(".folder-option").forEach(opt => {
+            opt.addEventListener("click", () => {
+                document.querySelectorAll(".folder-option").forEach(o => o.classList.remove("selected"));
+                opt.classList.add("selected");
+            });
+        });
+        
+        document.getElementById("confirmMoveDocBtn")?.addEventListener("click", () => {
+            const selected = document.querySelector(".folder-option.selected");
+            if (selected) {
+                const targetId = selected.getAttribute("data-id") === "null" ? null : parseInt(selected.getAttribute("data-id"));
+                moveDocumentToFolder(docId, targetId);
+                modal.remove();
+            } else {
+                showToast("Selecione um destino");
+            }
+        });
+        document.getElementById("cancelMoveDocBtn")?.addEventListener("click", () => modal.remove());
+    }
+
     // Renderização principal
     function render() {
         const app = document.getElementById("app");
         if (!currentUser) {
-            // Tela de login
             const empresas = getEmpresas();
             app.innerHTML = `
-                <div class="login-container">
-                    <div class="login-card">
-                        <h2><i class="fas fa-folder-open"></i> DocManager Pro</h2>
-                        <input type="text" id="loginUser" placeholder="Usuário">
-                        <input type="password" id="loginPass" placeholder="Senha">
-                        <select id="empresaSelect">
+                <div style="display:flex; justify-content:center; align-items:center; min-height:100vh;">
+                    <div style="background:white; border-radius:40px; padding:48px; max-width:450px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
+                        <h2 style="text-align:center; margin-bottom:30px;"><i class="fas fa-folder-open"></i> DocManager Pro</h2>
+                        <input type="text" id="loginUser" placeholder="Usuário" style="width:100%; padding:14px; margin-bottom:16px; border-radius:60px; border:1px solid #cbd5e1;">
+                        <input type="password" id="loginPass" placeholder="Senha" style="width:100%; padding:14px; margin-bottom:16px; border-radius:60px; border:1px solid #cbd5e1;">
+                        <select id="empresaSelect" style="width:100%; padding:14px; margin-bottom:20px; border-radius:60px; border:1px solid #cbd5e1;">
                             <option value="">-- Selecione a empresa --</option>
                             ${empresas.map(e => `<option value="${e}">${e}</option>`).join('')}
                         </select>
-                        <button id="btnLogin"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+                        <button id="btnLogin" style="width:100%; padding:14px; background:#3b82f6; color:white; border:none; border-radius:60px; font-weight:600;"><i class="fas fa-sign-in-alt"></i> Entrar</button>
                     </div>
                 </div>
             `;
@@ -858,115 +892,120 @@
             return;
         }
 
-        // Tela principal
-        const pastas = getPastas().filter(p => p.empresa === currentEmpresa && p.parentId === currentFolderId);
+        const pastasRaiz = getPastas().filter(p => p.empresa === currentEmpresa && p.parentId === null);
         const docs = getDocumentos().filter(d => d.pastaId === currentFolderId && d.empresa === currentEmpresa);
-        const isAdmin = isGlobalAdmin();
         const path = getFolderPath(currentFolderId);
-        
+        const isAdmin = isGlobalAdmin();
+
         app.innerHTML = `
-            <div class="header">
-                <div class="logo">
-                    <h1><i class="fas fa-folder-tree"></i> DocManager Pro</h1>
-                    <p>Gestão Documental Multi-Empresa</p>
-                </div>
-                <div class="user-info">
-                    <div class="empresa-badge"><i class="fas fa-building"></i> ${currentEmpresa}</div>
-                    <div class="empresa-badge"><i class="fas fa-user"></i> ${currentUser.username}</div>
-                    ${isAdmin ? '<span class="admin-badge"><i class="fas fa-crown"></i> Admin Global</span>' : ''}
-                    <button id="logoutBtn" class="btn-icon"><i class="fas fa-sign-out-alt"></i> Sair</button>
-                </div>
-            </div>
-            <div class="main-content">
-                ${isAdmin ? `
-                    <div class="admin-section">
-                        <h3><i class="fas fa-globe"></i> Gestão Corporativa</h3>
-                        <div class="form-row">
-                            <input type="text" id="newEmpresa" placeholder="Nova empresa">
-                            <button id="addEmpresaBtn"><i class="fas fa-plus"></i> Criar Empresa</button>
-                        </div>
-                        <div class="empresas-tags" id="empresasList">
-                            ${getEmpresas().map(e => `<span class="empresa-tag"><i class="fas fa-building"></i> ${e}</span>`).join('')}
-                        </div>
-                        <h3 style="margin-top: 20px;"><i class="fas fa-users"></i> Usuários</h3>
-                        <div class="form-row">
-                            <input type="text" id="newUser" placeholder="Usuário">
-                            <input type="password" id="newPass" placeholder="Senha">
-                            <select id="userEmpresa">${getEmpresas().map(e => `<option value="${e}">${e}</option>`).join('')}</select>
-                            <button id="addUserBtn"><i class="fas fa-user-plus"></i> Adicionar</button>
-                        </div>
-                        <div id="usersList"></div>
+            <div class="app-container">
+                <div class="header">
+                    <div class="logo">
+                        <h1><i class="fas fa-folder-tree"></i> DocManager Pro</h1>
+                        <p>Gestão Documental Multi-Empresa</p>
                     </div>
-                ` : ''}
+                    <div class="user-info">
+                        <div class="empresa-badge"><i class="fas fa-building"></i> ${currentEmpresa}</div>
+                        <div class="empresa-badge"><i class="fas fa-user"></i> ${currentUser.username}</div>
+                        ${isAdmin ? '<span class="admin-badge"><i class="fas fa-crown"></i> Admin</span>' : ''}
+                        <button id="logoutBtn" class="btn-icon"><i class="fas fa-sign-out-alt"></i> Sair</button>
+                    </div>
+                </div>
                 
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-folder-open"></i> Navegador de Pastas</h2>
-                        <button id="downloadZipBtn" class="btn-icon" style="background:#10b981; color:white;"><i class="fas fa-download"></i> Baixar Pasta (ZIP)</button>
-                    </div>
-                    <div class="breadcrumb">
-                        <span class="breadcrumb-item" data-id="null"><i class="fas fa-home"></i> Raiz</span>
-                        ${path.map(f => `<span><i class="fas fa-chevron-right"></i></span><span class="breadcrumb-item" data-id="${f.id}"><i class="fas fa-folder"></i> ${f.nome}</span>`).join('')}
-                    </div>
-                    <div class="form-row">
-                        <input type="text" id="newFolderName" placeholder="Nova pasta / subpasta">
-                        <button id="createFolderBtn"><i class="fas fa-plus"></i> Criar Pasta</button>
-                    </div>
-                    <div class="folders-grid" id="foldersGrid">
-                        ${pastas.map(pasta => `
-                            <div class="folder-card" draggable="true" data-folder-id="${pasta.id}">
-                                <div class="folder-icon">
-                                    <i class="fas fa-folder"></i>
-                                    <i class="fas fa-grip-vertical" style="font-size:0.9rem; opacity:0.5;"></i>
-                                </div>
-                                <div class="folder-name">${pasta.nome}</div>
-                                <div class="folder-actions">
-                                    <button class="btn-enter" data-id="${pasta.id}"><i class="fas fa-sign-in-alt"></i> Entrar</button>
-                                    <button class="btn-move" data-id="${pasta.id}" data-name="${pasta.nome}"><i class="fas fa-arrows-alt"></i> Mover</button>
-                                    <button class="btn-delete" data-id="${pasta.id}"><i class="fas fa-trash"></i> Excluir</button>
+                <div class="main-layout">
+                    <!-- Sidebar esquerda -->
+                    <div class="sidebar">
+                        <div class="folders-area">
+                            <div class="section-title">
+                                <i class="fas fa-folder-tree"></i> MEUS DOCUMENTOS
+                            </div>
+                            <div id="folderTreeContainer">
+                                ${renderFolderTree()}
+                                ${pastasRaiz.length === 0 ? '<div style="text-align:center; color:#94a3b8; padding:20px;"><i class="fas fa-folder-open"></i><p>Nenhuma pasta</p></div>' : ''}
+                            </div>
+                            <div style="margin-top: 20px;">
+                                <div style="display:flex; gap:8px;">
+                                    <input type="text" id="newFolderName" placeholder="Nova pasta" style="flex:2; padding:10px 14px; border-radius:60px; border:1px solid #cbd5e1;">
+                                    <button id="createFolderBtn" style="background:#3b82f6; border:none; border-radius:60px; padding:0 16px; color:white;"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
-                        `).join('')}
-                        ${pastas.length === 0 ? '<div style="grid-column:1/-1; text-align:center; color:#94a3b8; padding:40px;"><i class="fas fa-folder-open" style="font-size:3rem;"></i><p>Nenhuma pasta. Clique em "Criar Pasta" para começar</p></div>' : ''}
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2><i class="fas fa-file-alt"></i> Documentos</h2>
-                    </div>
-                    <div class="upload-area">
-                        <i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:#3b82f6;"></i>
-                        <p>Envie arquivos para esta pasta</p>
-                        <div class="upload-buttons">
-                            <button id="cameraBtn" class="btn-camera"><i class="fas fa-camera"></i> Câmera</button>
-                            <button id="galleryBtn" class="btn-gallery"><i class="fas fa-images"></i> Galeria</button>
-                            <button id="fileBtn" class="btn-file"><i class="fas fa-paperclip"></i> Arquivo</button>
                         </div>
-                        <input type="file" id="fileInput" accept="image/*,application/pdf" style="display:none;">
+                        
+                        <div class="settings-area">
+                            <button class="settings-toggle" id="settingsToggle">
+                                <span><i class="fas fa-cog"></i> Configurações</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="settings-panel" id="settingsPanel">
+                                ${isAdmin ? `
+                                    <h4 style="margin-bottom:10px;"><i class="fas fa-building"></i> Empresas</h4>
+                                    <input type="text" id="newEmpresa" placeholder="Nova empresa">
+                                    <button id="addEmpresaBtn"><i class="fas fa-plus"></i> Criar Empresa</button>
+                                    <div id="empresasList" style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:6px;">
+                                        ${getEmpresas().map(e => `<span style="background:#e2e8f0; padding:4px 12px; border-radius:40px; font-size:0.7rem;"><i class="fas fa-building"></i> ${e}</span>`).join('')}
+                                    </div>
+                                    <h4 style="margin-bottom:10px;"><i class="fas fa-users"></i> Usuários</h4>
+                                    <input type="text" id="newUser" placeholder="Usuário">
+                                    <input type="password" id="newPass" placeholder="Senha">
+                                    <select id="userEmpresa">${getEmpresas().map(e => `<option value="${e}">${e}</option>`).join('')}</select>
+                                    <button id="addUserBtn"><i class="fas fa-user-plus"></i> Adicionar</button>
+                                    <div id="usersList" style="margin-top:12px;"></div>
+                                ` : '<p style="color:#64748b; text-align:center;">Apenas administrador pode gerenciar empresas e usuários</p>'}
+                            </div>
+                        </div>
                     </div>
-                    <div class="documents-list">
-                        ${docs.map(doc => {
-                            const isImage = doc.tipo?.startsWith('image/');
-                            return `
-                                <div class="doc-item">
-                                    <div class="doc-info">
+                    
+                    <!-- Área de documentos -->
+                    <div class="documents-area">
+                        <div class="breadcrumb">
+                            <span class="breadcrumb-item" data-id="null"><i class="fas fa-home"></i> Raiz</span>
+                            ${path.map(f => `<span><i class="fas fa-chevron-right"></i></span><span class="breadcrumb-item" data-id="${f.id}"><i class="fas fa-folder"></i> ${f.nome}</span>`).join('')}
+                        </div>
+                        
+                        <div class="upload-card">
+                            <i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:#3b82f6;"></i>
+                            <p style="margin-top:8px;">Envie arquivos para esta pasta</p>
+                            <div class="upload-buttons">
+                                <button id="cameraBtn" class="btn-camera"><i class="fas fa-camera"></i> Câmera</button>
+                                <button id="galleryBtn" class="btn-gallery"><i class="fas fa-images"></i> Galeria</button>
+                                <button id="fileBtn" class="btn-file"><i class="fas fa-paperclip"></i> Arquivo</button>
+                            </div>
+                            <input type="file" id="fileInput" accept="image/*,application/pdf" style="display:none;">
+                        </div>
+                        
+                        <div class="documents-table">
+                            <div class="table-header">
+                                <div></div>
+                                <div>Nome do arquivo</div>
+                                <div>Data criação</div>
+                                <div>Usuário</div>
+                                <div>Tamanho</div>
+                                <div>Tipo</div>
+                                <div>Ações</div>
+                            </div>
+                            <div id="documentsList">
+                                ${docs.map(doc => `
+                                    <div class="doc-row">
                                         <div class="doc-preview">
-                                            ${isImage ? `<img src="${doc.base64}" style="width:48px; height:48px; border-radius:12px; object-fit:cover;">` : '<i class="fas fa-file-pdf" style="font-size:1.8rem;"></i>'}
+                                            ${doc.tipo?.startsWith('image/') ? `<img src="${doc.base64}" style="width:32px; height:32px; border-radius:8px; object-fit:cover;">` : '<i class="fas fa-file-pdf" style="font-size:1.2rem;"></i>'}
                                         </div>
-                                        <div class="doc-details">
-                                            <div class="doc-name">${doc.nome}</div>
-                                            <div class="doc-date"><i class="far fa-calendar-alt"></i> ${new Date(doc.data).toLocaleString()}</div>
+                                        <div class="doc-name">${doc.nome}</div>
+                                        <div class="doc-meta">${new Date(doc.data).toLocaleDateString()}</div>
+                                        <div class="doc-meta">${doc.usuario || currentUser.username}</div>
+                                        <div class="doc-meta">${formatFileSize(doc.tamanho)}</div>
+                                        <div class="doc-meta">${doc.tipo?.split('/')[1] || 'arquivo'}</div>
+                                        <div class="doc-actions">
+                                            <button class="btn-share" data-id="${doc.id}" data-name="${doc.nome}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
+                                            <button class="btn-rename" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear"><i class="fas fa-pen"></i></button>
+                                            <button class="btn-move-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Mover"><i class="fas fa-folder-open"></i></button>
+                                            <a href="${doc.base64}" download="${doc.nome}" class="btn-download" title="Baixar"><i class="fas fa-download"></i></a>
+                                            <button class="btn-delete" data-id="${doc.id}" title="Excluir"><i class="fas fa-trash"></i></button>
                                         </div>
                                     </div>
-                                    <div class="doc-actions">
-                                        <a href="${doc.base64}" download="${doc.nome}" class="btn-download"><i class="fas fa-download"></i> Baixar</a>
-                                        <button class="btn-delete-doc" data-id="${doc.id}"><i class="fas fa-trash"></i> Excluir</button>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
-                        ${docs.length === 0 ? '<div style="text-align:center; color:#94a3b8; padding:40px;"><i class="fas fa-file-alt" style="font-size:3rem;"></i><p>Nenhum documento. Envie arquivos para esta pasta</p></div>' : ''}
+                                `).join('')}
+                                ${docs.length === 0 ? '<div class="empty-state"><i class="fas fa-file-alt" style="font-size:3rem;"></i><p>Nenhum documento nesta pasta</p><p>Clique em "Câmera", "Galeria" ou "Arquivo" para adicionar</p></div>' : ''}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -978,8 +1017,8 @@
             createFolder(document.getElementById("newFolderName").value);
             document.getElementById("newFolderName").value = "";
         });
-        document.getElementById("downloadZipBtn")?.addEventListener("click", downloadFolderAsZip);
         
+        // Breadcrumb
         document.querySelectorAll(".breadcrumb-item").forEach(el => {
             el.addEventListener("click", () => {
                 currentFolderId = el.getAttribute("data-id") === "null" ? null : parseInt(el.getAttribute("data-id"));
@@ -987,25 +1026,40 @@
             });
         });
         
-        document.querySelectorAll(".btn-enter").forEach(btn => {
-            btn.addEventListener("click", () => {
-                currentFolderId = parseInt(btn.getAttribute("data-id"));
+        // Clique nas pastas da árvore
+        document.querySelectorAll(".tree-item").forEach(el => {
+            el.addEventListener("click", (e) => {
+                if (e.target.closest('.tree-actions')) return;
+                const folderId = parseInt(el.getAttribute("data-folder-id"));
+                currentFolderId = folderId;
                 render();
             });
         });
         
-        document.querySelectorAll(".btn-delete").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = parseInt(btn.getAttribute("data-id"));
+        // Mover pasta
+        document.querySelectorAll(".move-folder-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const folderId = parseInt(btn.getAttribute("data-id"));
+                showMoveFolderModal(folderId);
+            });
+        });
+        
+        // Excluir pasta
+        document.querySelectorAll(".delete-folder-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const folderId = parseInt(btn.getAttribute("data-id"));
                 if (confirm("Excluir pasta e todo seu conteúdo?")) {
-                    deleteFolderRecursive(id);
-                    if (currentFolderId === id) currentFolderId = null;
+                    deleteFolderRecursive(folderId);
+                    if (currentFolderId === folderId) currentFolderId = null;
                     render();
                 }
             });
         });
         
-        document.querySelectorAll(".btn-delete-doc").forEach(btn => {
+        // Ações de documentos
+        document.querySelectorAll(".btn-delete").forEach(btn => {
             btn.addEventListener("click", () => {
                 const id = parseInt(btn.getAttribute("data-id"));
                 if (confirm("Excluir documento?")) {
@@ -1016,26 +1070,28 @@
             });
         });
         
-        // Drag and drop
-        const folderCards = document.querySelectorAll(".folder-card[draggable='true']");
-        folderCards.forEach(card => {
-            card.addEventListener("dragstart", (e) => {
-                draggingFolderId = parseInt(card.getAttribute("data-folder-id"));
-                e.dataTransfer.setData("text/plain", draggingFolderId);
-            });
-            card.addEventListener("dragover", (e) => {
-                e.preventDefault();
-                card.classList.add("drag-over");
-            });
-            card.addEventListener("dragleave", () => card.classList.remove("drag-over"));
-            card.addEventListener("drop", (e) => {
-                e.preventDefault();
-                card.classList.remove("drag-over");
-                const targetId = parseInt(card.getAttribute("data-folder-id"));
-                if (draggingFolderId && targetId && draggingFolderId !== targetId) {
-                    moveFolder(draggingFolderId, targetId);
-                    draggingFolderId = null;
+        document.querySelectorAll(".btn-rename").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = parseInt(btn.getAttribute("data-id"));
+                const currentName = btn.getAttribute("data-name");
+                const newName = prompt("Novo nome do arquivo:", currentName);
+                if (newName && newName.trim()) {
+                    renameDocument(id, newName);
                 }
+            });
+        });
+        
+        document.querySelectorAll(".btn-move-doc").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const id = parseInt(btn.getAttribute("data-id"));
+                const name = btn.getAttribute("data-name");
+                showMoveDocModal(id, name);
+            });
+        });
+        
+        document.querySelectorAll(".btn-share").forEach(btn => {
+            btn.addEventListener("click", () => {
+                showToast("Funcionalidade de compartilhamento em desenvolvimento");
             });
         });
         
@@ -1063,6 +1119,20 @@
             }
         });
         
+        // Settings toggle
+        const settingsToggle = document.getElementById("settingsToggle");
+        const settingsPanel = document.getElementById("settingsPanel");
+        settingsToggle?.addEventListener("click", () => {
+            settingsOpen = !settingsOpen;
+            if (settingsOpen) {
+                settingsPanel.classList.add("open");
+                settingsToggle.querySelector(".fa-chevron-down").style.transform = "rotate(180deg)";
+            } else {
+                settingsPanel.classList.remove("open");
+                settingsToggle.querySelector(".fa-chevron-down").style.transform = "rotate(0deg)";
+            }
+        });
+        
         // Admin
         if (isAdmin) {
             document.getElementById("addEmpresaBtn")?.addEventListener("click", () => {
@@ -1077,12 +1147,12 @@
             const users = getUsers();
             const usersList = document.getElementById("usersList");
             if (usersList) {
-                usersList.innerHTML = `<div style="margin-top:10px;">${users.map(u => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:10px 15px; border-radius:40px; margin-bottom:8px;">
-                        <span><i class="fas fa-user"></i> <strong>${u.username}</strong> (${u.empresa}) ${u.role === 'global_admin' ? '<i class="fas fa-crown" style="color:#f59e0b;"></i>' : ''}</span>
-                        ${u.username !== 'admin' ? `<button class="delete-user-btn" data-user="${u.username}" style="background:#ef4444; border:none; padding:5px 12px; border-radius:40px; color:white; cursor:pointer;"><i class="fas fa-trash"></i></button>` : ''}
+                usersList.innerHTML = users.map(u => `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:8px 12px; border-radius:40px; margin-bottom:6px;">
+                        <span style="font-size:0.8rem;"><i class="fas fa-user"></i> ${u.username} (${u.empresa})</span>
+                        ${u.username !== 'admin' ? `<button class="delete-user-btn" data-user="${u.username}" style="background:#ef4444; border:none; padding:4px 10px; border-radius:40px; color:white; cursor:pointer;"><i class="fas fa-trash"></i></button>` : ''}
                     </div>
-                `).join('')}</div>`;
+                `).join('');
                 document.querySelectorAll(".delete-user-btn").forEach(btn => {
                     btn.addEventListener("click", () => {
                         let newUsers = getUsers().filter(u => u.username !== btn.getAttribute("data-user"));
@@ -1092,24 +1162,15 @@
                 });
             }
         }
-        
-        // Mover pasta modal
-        document.querySelectorAll(".btn-move").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const folderId = parseInt(btn.getAttribute("data-id"));
-                const folderName = btn.getAttribute("data-name");
-                showMoveModal(folderId, folderName);
-            });
-        });
     }
     
-    function showMoveModal(folderId, folderName) {
-        const pastas = getPastas().filter(p => p.empresa === currentEmpresa);
+    function showMoveFolderModal(folderId) {
+        const pastas = getPastas().filter(p => p.empresa === currentEmpresa && p.id !== folderId);
         const modal = document.createElement("div");
         modal.className = "modal";
         
         function buildOptions(parentId = null, level = 0) {
-            const children = pastas.filter(p => p.parentId === parentId && p.id !== folderId);
+            const children = pastas.filter(p => p.parentId === parentId);
             let html = "";
             for (const p of children) {
                 html += `<div class="folder-option" data-id="${p.id}" style="padding-left: ${level * 20}px">
@@ -1122,12 +1183,12 @@
         
         modal.innerHTML = `
             <div class="modal-content">
-                <h3><i class="fas fa-arrows-alt"></i> Mover: ${folderName}</h3>
+                <h3><i class="fas fa-arrows-alt"></i> Mover Pasta</h3>
                 <div class="folder-option" data-id="null"><i class="fas fa-home"></i> Raiz da Empresa</div>
                 ${buildOptions(null, 1)}
-                <div class="form-row" style="margin-top:20px;">
-                    <button id="confirmMoveBtn" style="background:#10b981;"><i class="fas fa-check"></i> Mover</button>
-                    <button id="cancelMoveBtn" class="btn-outline" style="background:#ef4444;"><i class="fas fa-times"></i> Cancelar</button>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button id="confirmMoveFolderBtn" style="flex:1; background:#10b981;"><i class="fas fa-check"></i> Mover</button>
+                    <button id="cancelMoveFolderBtn" style="flex:1; background:#ef4444;"><i class="fas fa-times"></i> Cancelar</button>
                 </div>
             </div>
         `;
@@ -1140,7 +1201,7 @@
             });
         });
         
-        document.getElementById("confirmMoveBtn")?.addEventListener("click", () => {
+        document.getElementById("confirmMoveFolderBtn")?.addEventListener("click", () => {
             const selected = document.querySelector(".folder-option.selected");
             if (selected) {
                 const targetId = selected.getAttribute("data-id") === "null" ? null : parseInt(selected.getAttribute("data-id"));
@@ -1150,7 +1211,7 @@
                 showToast("Selecione um destino");
             }
         });
-        document.getElementById("cancelMoveBtn")?.addEventListener("click", () => modal.remove());
+        document.getElementById("cancelMoveFolderBtn")?.addEventListener("click", () => modal.remove());
     }
     
     loadData();
