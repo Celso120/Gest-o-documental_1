@@ -598,6 +598,29 @@
             background: #000;
         }
 
+        .page-preview {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 8px;
+        }
+
+        .page-thumb {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .camera-select {
+            margin-bottom: 12px;
+            padding: 6px;
+            border-radius: 8px;
+        }
+
         @media (min-width: 768px) {
             .main-layout { flex-direction: row; }
             .sidebar { width: 300px; max-height: 100vh; border-radius: 0 20px 20px 0; }
@@ -617,7 +640,6 @@
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -649,8 +671,9 @@
     let currentUser = null, currentEmpresa = "", currentFolderId = null;
     let viewMode = "list";
     let selectedDocs = new Set();
-    let cameraPages = [];
+    let cameraPages = []; // Array de { dataUrl, preview }
     let currentStream = null;
+    let currentCameraDeviceId = null;
 
     function showToast(msg) {
         let existing = document.querySelector(".toast");
@@ -835,7 +858,7 @@
                 const checked = selectedDocs.has(doc.id) ? 'checked' : '';
                 html += `<tr data-doc-id="${doc.id}" draggable="true"><td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}></td><td><strong>${doc.nome.length > 35 ? doc.nome.substring(0, 32) + '...' : doc.nome}</strong></td><td>${isImage ? '🖼️ Imagem' : '📄 Documento'}</td><td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td><td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}</td><td>${doc.criadoPor || doc.modifiedBy || "sistema"}</td><td>${doc.modifiedBy || "-"}</td><td class="action-buttons-cell"><div class="action-buttons-group"><button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button><button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button><button class="action-icon history-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Histórico">📖</button><a href="${doc.base64}" download="${doc.nome}" class="action-icon" title="Download">⬇️</a></div></td></tr>`;
             });
-            html += `</tbody>${'茶'}`;
+            html += `</tbody>${'食'}`;
             document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
             
             const rows = document.querySelectorAll('.docs-table tbody tr[draggable="true"]');
@@ -889,26 +912,87 @@
     function updateMultiActionBar() { const bar = document.getElementById("multiActionBar"); const count = selectedDocs.size; document.getElementById("selectedCount").innerText = `${count} documento(s) selecionado(s)`; bar.classList.toggle("hidden", count === 0); }
     function showMoveDocsModal(docIds) { if (docIds.length === 0) return; const pastas = getPastas().filter(p => p.empresa === currentEmpresa); const modal = document.createElement('div'); modal.className = 'modal'; modal.innerHTML = `<div class="modal-content"><h3>Mover ${docIds.length} documento(s)</h3><div id="moveDocFolderList"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMoveDocs">Mover</button><button id="cancelMoveDocs">Cancelar</button></div></div>`; document.body.appendChild(modal); function buildOptions(parentId = null, level = 0) { let html = ''; pastas.filter(p => p.parentId === parentId).forEach(f => { html += `<div class="folder-option" data-id="${f.id}" style="padding-left:${level * 20 + 12}px">📁 ${f.nome}</div>${buildOptions(f.id, level + 1)}`; }); return html; } document.getElementById('moveDocFolderList').innerHTML = buildOptions(null, 0); document.querySelectorAll('.folder-option').forEach(opt => opt.addEventListener('click', function() { document.querySelectorAll('.folder-option').forEach(o => o.classList.remove('selected')); this.classList.add('selected'); })); document.getElementById('confirmMoveDocs').onclick = () => { const selected = document.querySelector('.folder-option.selected'); if (selected) moveDocumentsToFolder(docIds, parseInt(selected.getAttribute('data-id'))); modal.remove(); }; document.getElementById('cancelMoveDocs').onclick = () => modal.remove(); }
     
-    // ==================== CÂMERA COM PDF CORRIGIDO ====================
+    // ==================== CÂMARA COM SELEÇÃO DE DISPOSITIVO ====================
+    async function getCameraDevices() {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter(device => device.kind === 'videoinput');
+    }
+    
+    async function startCameraWithDevice(deviceId) {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+        try {
+            const constraints = { video: deviceId ? { deviceId: { exact: deviceId } } : true };
+            currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            return currentStream;
+        } catch (err) {
+            showToast("Erro ao acessar câmera: " + err.message);
+            return null;
+        }
+    }
+    
     async function startCameraCapture() {
         cameraPages = [];
-        if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); }
-        try {
-            currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        } catch (err) { showToast("Erro ao acessar câmera: " + err.message); return; }
+        if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
+        
+        // Obter dispositivos disponíveis
+        const devices = await getCameraDevices();
         
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content" style="max-width:500px;"><h3 style="margin-bottom:12px;">📸 Capturar Páginas</h3><video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:12px; background:#000;"></video><div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;"><button id="capturePageBtn" style="flex:1; background:#2c7da0; color:white;">📷 Capturar Página</button><button id="finishCaptureBtn" style="flex:1; background:#10b981; color:white;">✅ Finalizar PDF (0 págs)</button></div><div id="pagesPreview" style="max-height:100px; overflow-y:auto; font-size:11px; margin-bottom:10px;"></div><button id="cancelCaptureBtn" style="width:100%;">Cancelar</button></div>`;
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:550px;">
+                <h3 style="margin-bottom:12px;">📸 Capturar Páginas</h3>
+                <select id="cameraSelect" class="camera-select">
+                    ${devices.map((device, idx) => `<option value="${device.deviceId}" ${idx === 0 ? 'selected' : ''}>${device.label || `Câmera ${idx + 1}`}</option>`)}
+                </select>
+                <video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:12px; background:#000;"></video>
+                <div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;">
+                    <button id="capturePageBtn" style="flex:1; background:#2c7da0; color:white;">📷 Capturar Página</button>
+                    <button id="finishCaptureBtn" style="flex:1; background:#10b981; color:white;">✅ Gerar PDF (0 págs)</button>
+                </div>
+                <div id="pagesPreview" style="max-height:200px; overflow-y:auto; margin-bottom:10px; border:1px solid #eef2f6; border-radius:8px; padding:8px;"></div>
+                <button id="cancelCaptureBtn" style="width:100%;">Cancelar</button>
+            </div>
+        `;
         document.body.appendChild(modal);
         
         const video = modal.querySelector('#cameraVideo');
-        video.srcObject = currentStream;
+        const cameraSelect = modal.querySelector('#cameraSelect');
+        
+        // Iniciar com a primeira câmera
+        const startVideo = async (deviceId) => {
+            const stream = await startCameraWithDevice(deviceId);
+            if (stream) video.srcObject = stream;
+        };
+        
+        await startVideo(devices[0]?.deviceId);
+        
+        cameraSelect.addEventListener('change', async () => {
+            await startVideo(cameraSelect.value);
+        });
         
         const updateUI = () => {
-            modal.querySelector('#finishCaptureBtn').innerHTML = `✅ Finalizar PDF (${cameraPages.length} págs)`;
+            modal.querySelector('#finishCaptureBtn').innerHTML = `✅ Gerar PDF (${cameraPages.length} págs)`;
             const preview = modal.querySelector('#pagesPreview');
-            preview.innerHTML = cameraPages.map((_, i) => `<div>📄 Página ${i+1} capturada</div>`).join('');
+            preview.innerHTML = cameraPages.map((page, idx) => `
+                <div class="page-preview">
+                    <img src="${page.dataUrl}" class="page-thumb" alt="Página ${idx+1}">
+                    <span>Página ${idx+1}</span>
+                    <button class="remove-page-btn" data-index="${idx}" style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:6px; cursor:pointer;">🗑️ Remover</button>
+                </div>
+            `).join('');
+            
+            // Adicionar eventos de remoção
+            document.querySelectorAll('.remove-page-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(btn.getAttribute('data-index'));
+                    cameraPages.splice(index, 1);
+                    updateUI();
+                    showToast(`Página ${index + 1} removida`);
+                });
+            });
         };
         
         modal.querySelector('#capturePageBtn').onclick = () => {
@@ -916,7 +1000,8 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
-            cameraPages.push(canvas.toDataURL('image/jpeg', 0.9));
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // Compressão 70% para reduzir tamanho
+            cameraPages.push({ dataUrl });
             updateUI();
             showToast(`Página ${cameraPages.length} capturada`);
         };
@@ -925,26 +1010,29 @@
             if (cameraPages.length === 0) { showToast("Capture pelo menos uma página"); return; }
             
             try {
-                // Usar jsPDF corretamente
                 const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF();
+                const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
                 
                 for (let i = 0; i < cameraPages.length; i++) {
                     if (i > 0) pdf.addPage();
-                    const imgData = cameraPages[i];
+                    const imgData = cameraPages[i].dataUrl;
                     const imgProps = pdf.getImageProperties(imgData);
                     const pdfWidth = pdf.internal.pageSize.getWidth();
                     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
                 }
                 
                 const pdfBlob = pdf.output('blob');
                 const fileName = `documento_camera_${Date.now()}.pdf`;
-                await uploadFile(new File([pdfBlob], fileName, { type: 'application/pdf' }));
+                
+                // Comprimir ainda mais se necessário (redução de qualidade)
+                const compressedBlob = await compressPDF(pdfBlob);
+                
+                await uploadFile(new File([compressedBlob], fileName, { type: 'application/pdf' }));
                 
                 if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
                 modal.remove();
-                showToast("PDF criado e enviado com sucesso!");
+                showToast("PDF gerado com sucesso!");
             } catch (error) {
                 console.error("Erro ao criar PDF:", error);
                 showToast("Erro ao criar PDF: " + error.message);
@@ -955,11 +1043,17 @@
         updateUI();
     }
     
+    async function compressPDF(blob) {
+        // Se o PDF for muito grande, podemos tentar compactar (simplificado)
+        // Para este caso, retornamos o blob original pois o jsPDF já aplica compressão
+        return blob;
+    }
+    
     async function uploadFile(file) {
         if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return; }
         let base64Data, fileType = file.type, fileName = file.name;
         if (file.type.startsWith("image/")) {
-            base64Data = await resizeImage(file, 1200);
+            base64Data = await resizeImage(file, 1024); // Reduzido para 1024px para economizar espaço
             fileType = "image/jpeg";
             fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
         } else {
@@ -989,7 +1083,7 @@
             progressText.innerText = `Processando: ${i+1} de ${files.length} - ${file.name.substring(0,30)}`;
             let base64Data, fileType = file.type, fileName = file.name;
             if (file.type.startsWith("image/")) {
-                base64Data = await resizeImage(file, 1200);
+                base64Data = await resizeImage(file, 1024);
                 fileType = "image/jpeg";
                 fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
             } else {
@@ -1036,7 +1130,7 @@
     
     function readFileAsBase64(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => resolve(null); reader.readAsDataURL(file); }); }
     function resizeImage(file, maxSize) {
-        return new Promise((resolve) => { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { let width = img.width, height = img.height; if (width > height && width > maxSize) { height = (height * maxSize) / width; width = maxSize; } else if (height > maxSize) { width = (width * maxSize) / height; height = maxSize; } const canvas = document.createElement("canvas"); canvas.width = width; canvas.height = height; const ctx = canvas.getContext("2d"); ctx.drawImage(img, 0, 0, width, height); canvas.toBlob(blob => { const reader2 = new FileReader(); reader2.onload = () => resolve(reader2.result); reader2.readAsDataURL(blob); }, 'image/jpeg', 0.85); }; img.src = e.target.result; }; reader.readAsDataURL(file); });
+        return new Promise((resolve) => { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { let width = img.width, height = img.height; if (width > height && width > maxSize) { height = (height * maxSize) / width; width = maxSize; } else if (height > maxSize) { width = (width * maxSize) / height; height = maxSize; } const canvas = document.createElement("canvas"); canvas.width = width; canvas.height = height; const ctx = canvas.getContext("2d"); ctx.drawImage(img, 0, 0, width, height); canvas.toBlob(blob => { const reader2 = new FileReader(); reader2.onload = () => resolve(reader2.result); reader2.readAsDataURL(blob); }, 'image/jpeg', 0.7); }; img.src = e.target.result; }; reader.readAsDataURL(file); });
     }
     
     // ==================== ADMIN ====================
