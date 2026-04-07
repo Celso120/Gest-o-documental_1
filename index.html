@@ -671,9 +671,9 @@
     let currentUser = null, currentEmpresa = "", currentFolderId = null;
     let viewMode = "list";
     let selectedDocs = new Set();
-    let cameraPages = []; // Array de { dataUrl, preview }
+    let cameraPages = [];
     let currentStream = null;
-    let currentCameraDeviceId = null;
+    let isUploading = false;
 
     function showToast(msg) {
         let existing = document.querySelector(".toast");
@@ -858,7 +858,7 @@
                 const checked = selectedDocs.has(doc.id) ? 'checked' : '';
                 html += `<tr data-doc-id="${doc.id}" draggable="true"><td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}></td><td><strong>${doc.nome.length > 35 ? doc.nome.substring(0, 32) + '...' : doc.nome}</strong></td><td>${isImage ? '🖼️ Imagem' : '📄 Documento'}</td><td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td><td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}</td><td>${doc.criadoPor || doc.modifiedBy || "sistema"}</td><td>${doc.modifiedBy || "-"}</td><td class="action-buttons-cell"><div class="action-buttons-group"><button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button><button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button><button class="action-icon history-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Histórico">📖</button><a href="${doc.base64}" download="${doc.nome}" class="action-icon" title="Download">⬇️</a></div></td></tr>`;
             });
-            html += `</tbody>${'食'}`;
+            html += `</tbody>${'耀'}`;
             document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
             
             const rows = document.querySelectorAll('.docs-table tbody tr[draggable="true"]');
@@ -912,7 +912,181 @@
     function updateMultiActionBar() { const bar = document.getElementById("multiActionBar"); const count = selectedDocs.size; document.getElementById("selectedCount").innerText = `${count} documento(s) selecionado(s)`; bar.classList.toggle("hidden", count === 0); }
     function showMoveDocsModal(docIds) { if (docIds.length === 0) return; const pastas = getPastas().filter(p => p.empresa === currentEmpresa); const modal = document.createElement('div'); modal.className = 'modal'; modal.innerHTML = `<div class="modal-content"><h3>Mover ${docIds.length} documento(s)</h3><div id="moveDocFolderList"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMoveDocs">Mover</button><button id="cancelMoveDocs">Cancelar</button></div></div>`; document.body.appendChild(modal); function buildOptions(parentId = null, level = 0) { let html = ''; pastas.filter(p => p.parentId === parentId).forEach(f => { html += `<div class="folder-option" data-id="${f.id}" style="padding-left:${level * 20 + 12}px">📁 ${f.nome}</div>${buildOptions(f.id, level + 1)}`; }); return html; } document.getElementById('moveDocFolderList').innerHTML = buildOptions(null, 0); document.querySelectorAll('.folder-option').forEach(opt => opt.addEventListener('click', function() { document.querySelectorAll('.folder-option').forEach(o => o.classList.remove('selected')); this.classList.add('selected'); })); document.getElementById('confirmMoveDocs').onclick = () => { const selected = document.querySelector('.folder-option.selected'); if (selected) moveDocumentsToFolder(docIds, parseInt(selected.getAttribute('data-id'))); modal.remove(); }; document.getElementById('cancelMoveDocs').onclick = () => modal.remove(); }
     
-    // ==================== CÂMARA COM SELEÇÃO DE DISPOSITIVO ====================
+    // ==================== UPLOAD CORRIGIDO ====================
+    async function uploadFile(file) {
+        if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return false; }
+        if (isUploading) { showToast("Aguarde o upload atual terminar"); return false; }
+        
+        isUploading = true;
+        try {
+            let base64Data, fileType = file.type, fileName = file.name;
+            if (file.type.startsWith("image/")) {
+                base64Data = await resizeImage(file, 1024);
+                fileType = "image/jpeg";
+                fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
+            } else {
+                base64Data = await readFileAsBase64(file);
+            }
+            if (base64Data) {
+                const docs = getDocumentos();
+                docs.push({ 
+                    id: Date.now() + Math.random(), 
+                    nome: fileName, 
+                    base64: base64Data, 
+                    tipo: fileType, 
+                    pastaId: currentFolderId, 
+                    empresa: currentEmpresa, 
+                    data: new Date().toISOString(), 
+                    dataCriacao: new Date().toISOString(), 
+                    criadoPor: currentUser.username, 
+                    modifiedBy: currentUser.username, 
+                    tamanho: file.size, 
+                    history: [{ date: new Date().toISOString(), user: currentUser.username, action: "Criação", details: `Documento "${fileName}" criado` }] 
+                });
+                saveDocumentos(docs);
+                renderDocuments();
+                return true;
+            }
+            return false;
+        } finally {
+            isUploading = false;
+        }
+    }
+    
+    async function uploadMultipleFilesWithProgress(files) {
+        if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return; }
+        if (!files || files.length === 0) return;
+        if (isUploading) { showToast("Aguarde o upload atual terminar"); return; }
+        
+        const progressContainer = document.getElementById("progressBarContainer");
+        const progressFill = document.getElementById("progressFill");
+        const progressText = document.getElementById("progressText");
+        
+        progressContainer.classList.add("active");
+        isUploading = true;
+        let uploaded = 0;
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const percent = Math.round((i / files.length) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressText.innerText = `Processando: ${i+1} de ${files.length} - ${file.name.substring(0,30)}`;
+            
+            let base64Data, fileType = file.type, fileName = file.name;
+            if (file.type.startsWith("image/")) {
+                base64Data = await resizeImage(file, 1024);
+                fileType = "image/jpeg";
+                fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
+            } else {
+                base64Data = await readFileAsBase64(file);
+            }
+            if (base64Data) {
+                const docs = getDocumentos();
+                docs.push({ 
+                    id: Date.now() + Math.random(), 
+                    nome: fileName, 
+                    base64: base64Data, 
+                    tipo: fileType, 
+                    pastaId: currentFolderId, 
+                    empresa: currentEmpresa, 
+                    data: new Date().toISOString(), 
+                    dataCriacao: new Date().toISOString(), 
+                    criadoPor: currentUser.username, 
+                    modifiedBy: currentUser.username, 
+                    tamanho: file.size, 
+                    history: [{ date: new Date().toISOString(), user: currentUser.username, action: "Criação", details: `Documento "${fileName}" criado` }] 
+                });
+                saveDocumentos(docs);
+                uploaded++;
+            }
+            await new Promise(r => setTimeout(r, 10));
+        }
+        
+        progressFill.style.width = `100%`;
+        progressText.innerText = `Concluído! ${uploaded} arquivo(s) enviado(s)`;
+        setTimeout(() => {
+            progressContainer.classList.remove("active");
+            progressFill.style.width = "0%";
+        }, 2000);
+        
+        renderDocuments();
+        showToast(`${uploaded} arquivo(s) enviado(s)`);
+        isUploading = false;
+    }
+    
+    function setupFileInput() {
+        const fileInput = document.getElementById("hiddenFileInput");
+        if (!fileInput) return;
+        
+        // Remover event listeners antigos
+        const newFileInput = fileInput.cloneNode(true);
+        fileInput.parentNode.replaceChild(newFileInput, fileInput);
+        
+        newFileInput.onchange = async (e) => {
+            if (newFileInput.files && newFileInput.files.length) {
+                await uploadMultipleFilesWithProgress(Array.from(newFileInput.files));
+                newFileInput.value = "";
+            }
+        };
+        
+        document.getElementById("galleryUploadBtn").onclick = () => { 
+            newFileInput.removeAttribute("capture"); 
+            newFileInput.setAttribute("accept", "image/*"); 
+            newFileInput.multiple = true; 
+            newFileInput.click(); 
+        };
+        
+        document.getElementById("fileUploadBtn").onclick = () => { 
+            newFileInput.removeAttribute("capture"); 
+            newFileInput.setAttribute("accept", "image/*,application/pdf"); 
+            newFileInput.multiple = true; 
+            newFileInput.click(); 
+        };
+        
+        return newFileInput;
+    }
+    
+    function setupDragAndDrop() {
+        const container = document.getElementById("docsContainer");
+        if (!container) return;
+        
+        // Remover event listeners antigos
+        const newContainer = container.cloneNode(true);
+        container.parentNode.replaceChild(newContainer, container);
+        
+        newContainer.addEventListener('dragover', (e) => { 
+            e.preventDefault(); 
+            newContainer.classList.add('drag-over'); 
+        });
+        
+        newContainer.addEventListener('dragleave', () => { 
+            newContainer.classList.remove('drag-over'); 
+        });
+        
+        newContainer.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            newContainer.classList.remove('drag-over');
+            
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                await uploadMultipleFilesWithProgress(files);
+            } else {
+                const dragData = e.dataTransfer.getData('text/plain');
+                if (dragData && dragData.startsWith('doc_')) {
+                    const docId = parseInt(dragData.split('_')[1]);
+                    if (docId && currentFolderId) {
+                        moveDocumentsToFolder([docId], currentFolderId);
+                        renderDocuments();
+                    }
+                }
+            }
+            e.dataTransfer.clearData();
+        });
+        
+        document.getElementById("docsContainer") === newContainer;
+    }
+    
+    // ==================== CÂMARA ====================
     async function getCameraDevices() {
         const devices = await navigator.mediaDevices.enumerateDevices();
         return devices.filter(device => device.kind === 'videoinput');
@@ -936,7 +1110,6 @@
         cameraPages = [];
         if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
         
-        // Obter dispositivos disponíveis
         const devices = await getCameraDevices();
         
         const modal = document.createElement('div');
@@ -961,7 +1134,6 @@
         const video = modal.querySelector('#cameraVideo');
         const cameraSelect = modal.querySelector('#cameraSelect');
         
-        // Iniciar com a primeira câmera
         const startVideo = async (deviceId) => {
             const stream = await startCameraWithDevice(deviceId);
             if (stream) video.srcObject = stream;
@@ -984,7 +1156,6 @@
                 </div>
             `).join('');
             
-            // Adicionar eventos de remoção
             document.querySelectorAll('.remove-page-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const index = parseInt(btn.getAttribute('data-index'));
@@ -1000,7 +1171,7 @@
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             canvas.getContext('2d').drawImage(video, 0, 0);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.7); // Compressão 70% para reduzir tamanho
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
             cameraPages.push({ dataUrl });
             updateUI();
             showToast(`Página ${cameraPages.length} capturada`);
@@ -1024,11 +1195,7 @@
                 
                 const pdfBlob = pdf.output('blob');
                 const fileName = `documento_camera_${Date.now()}.pdf`;
-                
-                // Comprimir ainda mais se necessário (redução de qualidade)
-                const compressedBlob = await compressPDF(pdfBlob);
-                
-                await uploadFile(new File([compressedBlob], fileName, { type: 'application/pdf' }));
+                await uploadFile(new File([pdfBlob], fileName, { type: 'application/pdf' }));
                 
                 if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
                 modal.remove();
@@ -1043,94 +1210,38 @@
         updateUI();
     }
     
-    async function compressPDF(blob) {
-        // Se o PDF for muito grande, podemos tentar compactar (simplificado)
-        // Para este caso, retornamos o blob original pois o jsPDF já aplica compressão
-        return blob;
+    function readFileAsBase64(file) { 
+        return new Promise((resolve) => { 
+            const reader = new FileReader(); 
+            reader.onload = () => resolve(reader.result); 
+            reader.onerror = () => resolve(null); 
+            reader.readAsDataURL(file); 
+        }); 
     }
     
-    async function uploadFile(file) {
-        if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return; }
-        let base64Data, fileType = file.type, fileName = file.name;
-        if (file.type.startsWith("image/")) {
-            base64Data = await resizeImage(file, 1024); // Reduzido para 1024px para economizar espaço
-            fileType = "image/jpeg";
-            fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
-        } else {
-            base64Data = await readFileAsBase64(file);
-        }
-        if (base64Data) {
-            const docs = getDocumentos();
-            docs.push({ id: Date.now() + Math.random(), nome: fileName, base64: base64Data, tipo: fileType, pastaId: currentFolderId, empresa: currentEmpresa, data: new Date().toISOString(), dataCriacao: new Date().toISOString(), criadoPor: currentUser.username, modifiedBy: currentUser.username, tamanho: file.size, history: [{ date: new Date().toISOString(), user: currentUser.username, action: "Criação", details: `Documento "${fileName}" criado` }] });
-            saveDocumentos(docs);
-            renderDocuments();
-            showToast("Documento enviado!");
-        }
-    }
-    
-    async function uploadMultipleFilesWithProgress(files) {
-        if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return; }
-        if (!files || files.length === 0) return;
-        const progressContainer = document.getElementById("progressBarContainer");
-        const progressFill = document.getElementById("progressFill");
-        const progressText = document.getElementById("progressText");
-        progressContainer.classList.add("active");
-        let uploaded = 0;
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const percent = Math.round((i / files.length) * 100);
-            progressFill.style.width = `${percent}%`;
-            progressText.innerText = `Processando: ${i+1} de ${files.length} - ${file.name.substring(0,30)}`;
-            let base64Data, fileType = file.type, fileName = file.name;
-            if (file.type.startsWith("image/")) {
-                base64Data = await resizeImage(file, 1024);
-                fileType = "image/jpeg";
-                fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
-            } else {
-                base64Data = await readFileAsBase64(file);
-            }
-            if (base64Data) {
-                const docs = getDocumentos();
-                docs.push({ id: Date.now() + Math.random(), nome: fileName, base64: base64Data, tipo: fileType, pastaId: currentFolderId, empresa: currentEmpresa, data: new Date().toISOString(), dataCriacao: new Date().toISOString(), criadoPor: currentUser.username, modifiedBy: currentUser.username, tamanho: file.size, history: [{ date: new Date().toISOString(), user: currentUser.username, action: "Criação", details: `Documento "${fileName}" criado` }] });
-                saveDocumentos(docs);
-                uploaded++;
-            }
-        }
-        progressFill.style.width = `100%`;
-        progressText.innerText = `Concluído! ${uploaded} arquivo(s) enviado(s)`;
-        setTimeout(() => { progressContainer.classList.remove("active"); progressFill.style.width = "0%"; }, 2000);
-        renderDocuments();
-        showToast(`${uploaded} arquivo(s) enviado(s)`);
-    }
-    
-    function setupDragAndDrop() {
-        const container = document.getElementById("docsContainer");
-        if (!container) return;
-        
-        container.addEventListener('dragover', (e) => { e.preventDefault(); container.classList.add('drag-over'); });
-        container.addEventListener('dragleave', () => { container.classList.remove('drag-over'); });
-        container.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            container.classList.remove('drag-over');
-            const files = Array.from(e.dataTransfer.files);
-            if (files.length > 0) {
-                await uploadMultipleFilesWithProgress(files);
-            } else {
-                const dragData = e.dataTransfer.getData('text/plain');
-                if (dragData && dragData.startsWith('doc_')) {
-                    const docId = parseInt(dragData.split('_')[1]);
-                    if (docId && currentFolderId) {
-                        moveDocumentsToFolder([docId], currentFolderId);
-                        renderDocuments();
-                    }
-                }
-            }
-        });
-    }
-    
-    function readFileAsBase64(file) { return new Promise((resolve) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => resolve(null); reader.readAsDataURL(file); }); }
     function resizeImage(file, maxSize) {
-        return new Promise((resolve) => { const reader = new FileReader(); reader.onload = function(e) { const img = new Image(); img.onload = function() { let width = img.width, height = img.height; if (width > height && width > maxSize) { height = (height * maxSize) / width; width = maxSize; } else if (height > maxSize) { width = (width * maxSize) / height; height = maxSize; } const canvas = document.createElement("canvas"); canvas.width = width; canvas.height = height; const ctx = canvas.getContext("2d"); ctx.drawImage(img, 0, 0, width, height); canvas.toBlob(blob => { const reader2 = new FileReader(); reader2.onload = () => resolve(reader2.result); reader2.readAsDataURL(blob); }, 'image/jpeg', 0.7); }; img.src = e.target.result; }; reader.readAsDataURL(file); });
+        return new Promise((resolve) => { 
+            const reader = new FileReader(); 
+            reader.onload = function(e) { 
+                const img = new Image(); 
+                img.onload = function() { 
+                    let width = img.width, height = img.height; 
+                    if (width > height && width > maxSize) { height = (height * maxSize) / width; width = maxSize; } 
+                    else if (height > maxSize) { width = (width * maxSize) / height; height = maxSize; } 
+                    const canvas = document.createElement("canvas"); 
+                    canvas.width = width; canvas.height = height; 
+                    const ctx = canvas.getContext("2d"); 
+                    ctx.drawImage(img, 0, 0, width, height); 
+                    canvas.toBlob(blob => { 
+                        const reader2 = new FileReader(); 
+                        reader2.onload = () => resolve(reader2.result); 
+                        reader2.readAsDataURL(blob); 
+                    }, 'image/jpeg', 0.7); 
+                }; 
+                img.src = e.target.result; 
+            }; 
+            reader.readAsDataURL(file); 
+        }); 
     }
     
     // ==================== ADMIN ====================
@@ -1156,19 +1267,26 @@
     function clearSession() { localStorage.removeItem("docmanager_user"); localStorage.removeItem("docmanager_empresa"); localStorage.removeItem("docmanager_folder"); }
     function loadSession() { const savedUser = localStorage.getItem("docmanager_user"); const savedEmpresa = localStorage.getItem("docmanager_empresa"); if (savedUser && savedEmpresa) { const user = getUsers().find(u => u.username === savedUser && u.empresa === savedEmpresa); if (user) { currentUser = user; currentEmpresa = savedEmpresa; currentFolderId = localStorage.getItem("docmanager_folder") ? parseInt(localStorage.getItem("docmanager_folder")) : null; return true; } } return false; }
     
-    function renderFullUI() { renderFolderTree(); renderDocuments(); renderBreadcrumb(); updateMultiActionBar(); setupDragAndDrop(); }
+    function renderFullUI() { 
+        renderFolderTree(); 
+        renderDocuments(); 
+        renderBreadcrumb(); 
+        updateMultiActionBar(); 
+        setupFileInput();
+        setupDragAndDrop();
+    }
     
     function renderMain() {
         document.getElementById("app").innerHTML = `<div class="main-layout"><div class="sidebar"><div class="sidebar-header"><h2>📂 DocManager</h2><div class="user-info">👤 ${currentUser.username}<br>🏢 ${currentEmpresa}${isGlobalAdmin() ? ' ⭐ Admin' : ''}</div></div><div class="folder-tree-container"><div style="margin-bottom:8px;"><button id="newRootFolderBtn" style="width:100%;">+ Nova Pasta</button></div><div id="folderTree"></div></div><div class="sidebar-footer">${isGlobalAdmin() ? '<button id="adminConfigBtn" class="config-btn">⚙️ Administração</button>' : ''}<button id="logoutBtn" class="config-btn">🚪 Sair</button></div></div><div class="main-content"><div class="top-bar"><div class="breadcrumb-area" id="breadcrumbArea"></div><div class="upload-group"><button id="cameraUploadBtn" class="upload-btn">📷 Câmera</button><button id="galleryUploadBtn" class="upload-btn">🖼️ Galeria</button><button id="fileUploadBtn" class="upload-btn">📎 Arquivo</button></div><div class="drag-message">📌 Arraste documentos aqui</div><div class="view-controls"><button id="listViewBtn" class="view-btn ${viewMode === 'list' ? 'active' : ''}">📋 Lista</button><button id="gridViewBtn" class="view-btn ${viewMode === 'grid' ? 'active' : ''}">🔲 Grade</button></div></div><div id="progressBarContainer" class="progress-bar-container"><div class="progress-info" id="progressText">Enviando...</div><div class="progress-bar-wrapper"><div id="progressFill" class="progress-fill"></div></div></div><div id="multiActionBar" class="multi-action-bar hidden"><span class="selected-info">✅ <span id="selectedCount">0</span> documento(s)</span><button id="batchMoveBtn" class="multi-action-btn">📂 Mover</button><button id="batchDeleteBtn" class="multi-action-btn danger">🗑️ Excluir</button><button id="clearSelectionBtn" class="multi-action-btn">Limpar</button></div><div class="documents-container" id="docsContainer"></div></div></div><input type="file" id="hiddenFileInput" accept="image/*,application/pdf" multiple style="display:none;">`;
+        
         renderFullUI();
+        
         document.getElementById("newRootFolderBtn").onclick = () => { const name = prompt("Nome da pasta:"); if (name) createFolderAt(name, currentFolderId); };
         document.getElementById("logoutBtn").onclick = () => { clearSession(); currentUser = null; renderLogin(); };
         if (isGlobalAdmin()) document.getElementById("adminConfigBtn").onclick = () => renderAdminModal();
-        const fileInput = document.getElementById("hiddenFileInput");
+        
         document.getElementById("cameraUploadBtn").onclick = () => startCameraCapture();
-        document.getElementById("galleryUploadBtn").onclick = () => { fileInput.removeAttribute("capture"); fileInput.setAttribute("accept", "image/*"); fileInput.multiple = true; fileInput.click(); };
-        document.getElementById("fileUploadBtn").onclick = () => { fileInput.removeAttribute("capture"); fileInput.setAttribute("accept", "image/*,application/pdf"); fileInput.multiple = true; fileInput.click(); };
-        fileInput.onchange = async (e) => { if (fileInput.files.length) { await uploadMultipleFilesWithProgress(Array.from(fileInput.files)); fileInput.value = ""; } };
+        
         document.getElementById("listViewBtn").onclick = () => { viewMode = "list"; renderMain(); };
         document.getElementById("gridViewBtn").onclick = () => { viewMode = "grid"; renderMain(); };
         document.getElementById("batchMoveBtn").onclick = () => { if (selectedDocs.size) showMoveDocsModal(Array.from(selectedDocs)); };
