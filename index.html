@@ -372,6 +372,27 @@
             border: 2px dashed #2c7da0;
         }
 
+        /* Área de Upload com indicador de arraste */
+        .upload-area {
+            background: #f8fafc;
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+
+        .upload-area.drag-over {
+            background: #e0f2fe;
+            border-color: #2c7da0;
+        }
+
+        .upload-area p {
+            font-size: 13px;
+            color: #64748b;
+        }
+
         /* Tabela Compacta */
         .docs-table {
             width: 100%;
@@ -481,6 +502,32 @@
             background: #e2e8f0;
         }
 
+        /* Modal de Histórico */
+        .history-modal {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 12px;
+            border-bottom: 1px solid #eef2f6;
+            font-size: 13px;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-date {
+            color: #2c7da0;
+            font-weight: 500;
+        }
+
+        .history-action {
+            margin-top: 4px;
+            color: #475569;
+        }
+
         /* Modais */
         .modal {
             position: fixed;
@@ -501,7 +548,7 @@
             border-radius: 24px;
             padding: 24px;
             max-width: 90%;
-            width: 480px;
+            width: 500px;
             max-height: 80vh;
             overflow-y: auto;
         }
@@ -821,11 +868,58 @@
     }
     
     // ==================== DOCUMENTOS ====================
+    function addDocumentHistory(docId, action, userName) {
+        let docs = getDocumentos();
+        const doc = docs.find(d => d.id === docId);
+        if (doc) {
+            if (!doc.history) doc.history = [];
+            doc.history.push({
+                date: new Date().toISOString(),
+                action: action,
+                user: userName
+            });
+            saveDocumentos(docs);
+        }
+    }
+    
+    function showDocumentHistory(doc) {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        let historyHtml = '<div class="history-modal">';
+        if (doc.history && doc.history.length > 0) {
+            [...doc.history].reverse().forEach(h => {
+                historyHtml += `
+                    <div class="history-item">
+                        <div class="history-date">📅 ${new Date(h.date).toLocaleString()}</div>
+                        <div class="history-action">✏️ ${h.action}</div>
+                        <div style="font-size:11px; color:#64748b;">👤 ${h.user}</div>
+                    </div>
+                `;
+            });
+        } else {
+            historyHtml += '<div style="padding:20px; text-align:center; color:#94a3b8;">Nenhum histórico disponível</div>';
+        }
+        historyHtml += '</div>';
+        
+        modal.innerHTML = `<div class="modal-content">
+            <h3 style="margin-bottom:16px;">📋 Histórico: ${doc.nome}</h3>
+            ${historyHtml}
+            <button id="closeHistoryBtn" style="margin-top:20px; width:100%; background:#f1f5f9;">Fechar</button>
+        </div>`;
+        document.body.appendChild(modal);
+        document.getElementById('closeHistoryBtn').onclick = () => modal.remove();
+    }
+    
     function moveDocumentsToFolder(docIds, targetFolderId) {
         let docs = getDocumentos();
         docIds.forEach(id => {
             const doc = docs.find(d => d.id === id);
-            if (doc) { doc.pastaId = targetFolderId; doc.modifiedBy = currentUser.username; doc.data = new Date().toISOString(); }
+            if (doc) { 
+                doc.pastaId = targetFolderId; 
+                doc.modifiedBy = currentUser.username; 
+                doc.data = new Date().toISOString();
+                addDocumentHistory(id, `Movido para pasta ID ${targetFolderId}`, currentUser.username);
+            }
         });
         saveDocumentos(docs);
         selectedDocs.clear();
@@ -851,8 +945,7 @@
                         <th>Tamanho</th>
                         <th>Criação</th>
                         <th>Criador</th>
-                        <th>Edição</th>
-                        <th>Editor</th>
+                        <th>Última Edição</th>
                         <th style="width:1%; white-space:nowrap;">Ações</th>
                     </tr>
                 </thead>
@@ -867,18 +960,18 @@
                     <td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td>
                     <td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}</td>
                     <td>${doc.criadoPor || doc.modifiedBy || "sistema"}</td>
-                    <td>${new Date(doc.data).toLocaleDateString()}</td>
-                    <td>${doc.modifiedBy || "-"}</td>
+                    <td>${new Date(doc.data).toLocaleString()}</td>
                     <td class="action-buttons-cell">
                         <div class="action-buttons-group">
                             <button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button>
                             <button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button>
+                            <button class="action-icon info-doc" data-id="${doc.id}" title="Histórico">ℹ️</button>
                             <a href="${doc.base64}" download="${doc.nome}" class="action-icon" style="text-decoration:none;" title="Download">⬇️</a>
                         </div>
                     </td>
-                 </tr>`;
+                  </tr>`;
             });
-            html += `</tbody>点心`;
+            html += `</tbody>${'</table>'}`;
             document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
             
             // Drag and drop para mover documentos entre pastas
@@ -906,9 +999,10 @@
                             <div class="grid-preview">${isImage ? '🖼️' : '📄'}</div>
                             <div style="font-size:12px; font-weight:500;">${doc.nome.substring(0, 25)}</div>
                             <div style="font-size:10px; color:#64748b;">${new Date(doc.data).toLocaleDateString()}</div>
-                            <div class="action-buttons-group" style="display:flex; gap:4px; margin-top:8px;">
+                            <div class="action-buttons-group" style="display:flex; gap:4px; margin-top:8px; justify-content:center;">
                                 <button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}">✏️</button>
                                 <button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}">👁️</button>
+                                <button class="action-icon info-doc" data-id="${doc.id}" title="Histórico">ℹ️</button>
                                 <a href="${doc.base64}" download="${doc.nome}" class="action-icon">⬇️</a>
                             </div>
                         </div>`;
@@ -949,7 +1043,16 @@
                 if (newName?.trim()) {
                     let docs = getDocumentos();
                     const doc = docs.find(d => d.id === id);
-                    if (doc) { doc.nome = newName.trim(); doc.modifiedBy = currentUser.username; doc.data = new Date().toISOString(); saveDocumentos(docs); renderDocuments(); showToast("Renomeado"); }
+                    if (doc) { 
+                        const oldNome = doc.nome;
+                        doc.nome = newName.trim(); 
+                        doc.modifiedBy = currentUser.username; 
+                        doc.data = new Date().toISOString();
+                        addDocumentHistory(id, `Renomeado de "${oldNome}" para "${newName.trim()}"`, currentUser.username);
+                        saveDocumentos(docs); 
+                        renderDocuments(); 
+                        showToast("Renomeado"); 
+                    }
                 }
             });
         });
@@ -967,6 +1070,15 @@
                 } else {
                     showToast("Visualização disponível apenas para imagens");
                 }
+            });
+        });
+        
+        document.querySelectorAll('.info-doc').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const docs = getDocumentos();
+                const doc = docs.find(d => d.id === id);
+                if (doc) showDocumentHistory(doc);
             });
         });
     }
@@ -1052,8 +1164,9 @@
             }
             if (base64Data) {
                 const docs = getDocumentos();
+                const newId = Date.now() + Math.random();
                 docs.push({
-                    id: Date.now() + Math.random(),
+                    id: newId,
                     nome: fileName,
                     base64: base64Data,
                     tipo: fileType,
@@ -1063,7 +1176,8 @@
                     dataCriacao: new Date().toISOString(),
                     criadoPor: currentUser.username,
                     modifiedBy: currentUser.username,
-                    tamanho: file.size
+                    tamanho: file.size,
+                    history: [{ date: new Date().toISOString(), action: "Documento criado", user: currentUser.username }]
                 });
                 saveDocumentos(docs);
                 uploaded++;
@@ -1083,6 +1197,7 @@
     
     function setupDragAndDrop() {
         const container = document.getElementById("docsContainer");
+        const uploadArea = document.getElementById("uploadArea");
         if (!container) return;
         
         container.addEventListener('dragover', (e) => {
@@ -1109,6 +1224,24 @@
                 }
             }
         });
+        
+        if (uploadArea) {
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('drag-over');
+            });
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('drag-over');
+            });
+            uploadArea.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('drag-over');
+                const files = Array.from(e.dataTransfer.files);
+                if (files.length > 0) {
+                    await uploadMultipleFilesWithProgress(files);
+                }
+            });
+        }
     }
     
     function readFileAsBase64(file) {
@@ -1231,6 +1364,11 @@
                         <button id="batchMoveBtn" class="multi-action-btn">📂 Mover Selecionados</button>
                         <button id="batchDeleteBtn" class="multi-action-btn danger">🗑️ Excluir Selecionados</button>
                         <button id="clearSelectionBtn" class="multi-action-btn">Limpar</button>
+                    </div>
+                    
+                    <div id="uploadArea" class="upload-area">
+                        <p>📁 Arraste documentos aqui ou clique nos botões acima</p>
+                        <p style="font-size:11px; margin-top:4px;">Suporte a imagens e PDFs</p>
                     </div>
                     
                     <div class="documents-container" id="docsContainer"></div>
