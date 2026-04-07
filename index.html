@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>DocManager Pro - Gestão Documental</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>DocManager Pro - Sistema Multi-Empresa</title>
     <style>
         * {
             margin: 0;
@@ -13,470 +12,491 @@
         }
 
         body {
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Inter', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Helvetica, Arial, sans-serif;
+            background: #f1f5f9;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Login */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             min-height: 100vh;
+            background: linear-gradient(135deg, #1a4a6e 0%, #2c7da0 100%);
             padding: 20px;
         }
 
-        /* Container principal */
-        .app-container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: #f8fafc;
-            border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3);
-            overflow: hidden;
-            min-height: 85vh;
+        .login-card {
+            background: white;
+            border-radius: 28px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+
+        .login-card h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #1a4a6e;
+        }
+
+        input, select, button {
+            font-size: 14px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            padding: 10px 14px;
+            transition: 0.2s;
+            background: #fff;
+        }
+
+        button {
+            background: #2c7da0;
+            color: white;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1e5a74;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: flex;
+            height: 100vh;
+            background: #f1f5f9;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 340px;
+            background: white;
+            border-radius: 0 28px 28px 0;
             display: flex;
             flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.05);
+            overflow: hidden;
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            padding: 18px 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+        .sidebar-header {
+            padding: 20px 20px 12px;
+            border-bottom: 1px solid #eef2f6;
         }
 
-        .logo h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo h1 i {
-            color: #60a5fa;
-            font-size: 1.6rem;
-        }
-
-        .logo p {
-            font-size: 0.7rem;
-            opacity: 0.7;
-            color: white;
-            margin-top: 4px;
+        .sidebar-header h2 {
+            font-size: 18px;
+            color: #1a4a6e;
         }
 
         .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 10px 12px;
+            margin-top: 12px;
+            font-size: 13px;
         }
 
-        .empresa-badge {
-            background: rgba(255,255,255,0.15);
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 0.85rem;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .admin-badge {
-            background: #f59e0b;
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .btn-icon {
-            background: rgba(255,255,255,0.15);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 40px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.85rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-icon:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-1px);
-        }
-
-        /* Layout principal - 2 colunas */
-        .main-layout {
-            display: flex;
+        /* Árvore de Pastas */
+        .folder-tree-container {
             flex: 1;
-            min-height: 70vh;
-        }
-
-        /* Sidebar esquerda - Pastas e Configurações */
-        .sidebar {
-            width: 320px;
-            background: white;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Área de pastas em árvore */
-        .folders-area {
-            flex: 1;
-            padding: 20px;
             overflow-y: auto;
-        }
-
-        .section-title {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #64748b;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Árvore de pastas */
-        .folder-tree {
-            list-style: none;
-            margin-left: 0;
+            padding: 12px;
         }
 
         .tree-node {
             list-style: none;
-            margin-left: 0;
         }
 
-        .tree-item {
+        .tree-item-wrapper {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
+            padding: 6px 8px;
             margin: 2px 0;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s;
-            background: transparent;
+            transition: all 0.15s;
         }
 
-        .tree-item:hover {
+        .tree-item-wrapper:hover {
             background: #f1f5f9;
         }
 
-        .tree-item.active {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
+        .tree-item-wrapper.active {
+            background: #e0f2fe;
         }
 
-        .tree-item.active .folder-name {
-            color: white;
-        }
-
-        .tree-item-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        .tree-item-content i {
+        .expand-icon {
             width: 20px;
-            color: #eab308;
-        }
-
-        .tree-item.active .tree-item-content i {
-            color: white;
-        }
-
-        .folder-name {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .tree-actions {
-            display: none;
-            gap: 4px;
-        }
-
-        .tree-item:hover .tree-actions {
-            display: flex;
-        }
-
-        .tree-actions button {
-            background: transparent;
-            border: none;
+            text-align: center;
             cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 8px;
-            font-size: 0.7rem;
+            font-size: 10px;
             color: #64748b;
         }
 
-        .tree-actions button:hover {
-            background: #e2e8f0;
-            color: #1e293b;
+        .folder-icon {
+            width: 20px;
+            margin-right: 6px;
+            font-size: 14px;
         }
 
-        .children {
-            margin-left: 28px;
+        .folder-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 500;
         }
 
-        /* Área de configurações */
-        .settings-area {
-            border-top: 1px solid #e2e8f0;
-            padding: 16px 20px;
-            background: #f8fafc;
+        .folder-actions {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: opacity 0.15s;
         }
 
-        .settings-toggle {
-            width: 100%;
-            background: transparent;
+        .tree-item-wrapper:hover .folder-actions {
+            opacity: 1;
+        }
+
+        .icon-btn {
+            background: none;
             border: none;
-            padding: 10px;
-            border-radius: 16px;
             cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .icon-btn:hover {
+            background: #e2e8f0;
+        }
+
+        .children-container {
+            margin-left: 24px;
+        }
+
+        .sidebar-footer {
+            padding: 14px 16px;
+            border-top: 1px solid #eef2f6;
+        }
+
+        .config-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: none;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .config-btn:hover {
+            background: #f1f5f9;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 16px 20px 16px 16px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-bottom: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-weight: 600;
-            color: #1e293b;
-            transition: all 0.2s;
-        }
-
-        .settings-toggle:hover {
-            background: #e2e8f0;
-        }
-
-        .settings-panel {
-            margin-top: 12px;
-            display: none;
-        }
-
-        .settings-panel.open {
-            display: block;
-        }
-
-        .settings-panel input, .settings-panel select {
-            width: 100%;
-            padding: 10px 14px;
-            margin-bottom: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 60px;
-            font-size: 0.85rem;
-        }
-
-        .settings-panel button {
-            width: 100%;
-            padding: 10px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            border-radius: 60px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        /* Área de documentos - lado direito */
-        .documents-area {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            background: #f8fafc;
-        }
-
-        /* Breadcrumb */
-        .breadcrumb {
-            background: white;
-            padding: 12px 18px;
-            border-radius: 20px;
-            margin-bottom: 20px;
-            display: flex;
             flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        .breadcrumb-area {
+            display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            gap: 6px;
+            flex-wrap: wrap;
+            font-size: 13px;
         }
 
         .breadcrumb-item {
             cursor: pointer;
-            color: #3b82f6;
+            color: #2c7da0;
             font-weight: 500;
         }
 
-        .breadcrumb-item:hover {
-            text-decoration: underline;
-        }
-
-        /* Upload area */
-        .upload-card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 24px;
-            border: 1px solid #e2e8f0;
-            text-align: center;
-        }
-
-        .upload-buttons {
+        .upload-group {
             display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-
-        .upload-buttons button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 60px;
-            cursor: pointer;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
             gap: 8px;
-        }
-
-        .btn-camera { background: #3b82f6; color: white; }
-        .btn-gallery { background: #8b5cf6; color: white; }
-        .btn-file { background: #64748b; color: white; }
-
-        /* Tabela de documentos */
-        .documents-table {
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-        }
-
-        .table-header {
-            display: grid;
-            grid-template-columns: 40px 1.5fr 1fr 0.8fr 0.8fr 0.8fr 120px;
-            background: #f1f5f9;
-            padding: 14px 16px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #475569;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .doc-row {
-            display: grid;
-            grid-template-columns: 40px 1.5fr 1fr 0.8fr 0.8fr 0.8fr 120px;
-            padding: 14px 16px;
-            align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-            transition: all 0.2s;
-            font-size: 0.85rem;
-        }
-
-        .doc-row:hover {
             background: #f8fafc;
+            padding: 4px 12px;
+            border-radius: 40px;
         }
 
-        .doc-preview {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
+        .upload-btn {
+            background: none;
+            color: #334155;
+            padding: 6px 14px;
+            font-size: 13px;
         }
 
-        .doc-name {
-            font-weight: 500;
-            color: #1e293b;
-            word-break: break-word;
+        .upload-btn:hover {
+            background: #e2e8f0;
+            color: #1a4a6e;
         }
 
-        .doc-meta {
-            color: #64748b;
-            font-size: 0.75rem;
-        }
-
-        .doc-actions {
+        .view-controls {
             display: flex;
             gap: 6px;
+            background: #f8fafc;
+            padding: 4px;
+            border-radius: 40px;
+        }
+
+        .view-btn {
+            background: none;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .view-btn.active {
+            background: #2c7da0;
+            color: white;
+        }
+
+        /* Barra de Progresso */
+        .progress-bar-container {
+            background: white;
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-bottom: 16px;
+            display: none;
+            align-items: center;
+            gap: 16px;
             flex-wrap: wrap;
         }
 
-        .doc-actions button, .doc-actions a {
-            padding: 6px 10px;
-            border: none;
-            border-radius: 40px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: 500;
-            display: inline-flex;
+        .progress-bar-container.active {
+            display: flex;
+        }
+
+        .progress-info {
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .progress-bar-wrapper {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        /* Barra de Ações Múltiplas (Topo Esquerdo da Lista) */
+        .multi-action-bar {
+            background: #eef2ff;
+            border-radius: 14px;
+            padding: 10px 20px;
+            margin-bottom: 12px;
+            display: flex;
             align-items: center;
-            gap: 4px;
-            text-decoration: none;
+            gap: 16px;
+            flex-wrap: wrap;
+            border-left: 4px solid #2c7da0;
+        }
+
+        .multi-action-bar .selected-info {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1e4668;
+        }
+
+        .multi-action-btn {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .multi-action-btn:hover {
+            background: #d97706;
+        }
+
+        .multi-action-btn.outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            color: #475569;
+        }
+
+        .multi-action-btn.outline:hover {
+            background: #f1f5f9;
+        }
+
+        /* Tabela Compacta */
+        .documents-container {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            overflow: auto;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        .docs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .docs-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: #fafcff;
+            border-bottom: 1px solid #eef2f6;
+            font-weight: 600;
+            color: #475569;
+            position: sticky;
+            top: 0;
+            background: white;
+            font-size: 12px;
+        }
+
+        .docs-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: middle;
+        }
+
+        .docs-table tr:hover {
+            background: #fafcff;
+        }
+
+        .doc-checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* Grid View */
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 14px;
+            padding: 16px;
+        }
+
+        .grid-card {
+            background: white;
+            border: 1px solid #eef2f6;
+            border-radius: 16px;
+            padding: 12px;
             transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
         }
 
-        .btn-share { background: #8b5cf6; color: white; }
-        .btn-delete { background: #ef4444; color: white; }
-        .btn-rename { background: #f59e0b; color: white; }
-        .btn-move-doc { background: #3b82f6; color: white; }
-        .btn-download { background: #10b981; color: white; }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px;
-            color: #94a3b8;
+        .grid-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        /* Modal */
+        .grid-card .doc-checkbox {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+        }
+
+        .grid-preview {
+            width: 100%;
+            height: 100px;
+            background: #f8fafc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .action-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        .action-icon:hover {
+            background: #f1f5f9;
+        }
+
+        /* Modais */
         .modal {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.5);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            padding: 20px;
+            z-index: 3000;
+            backdrop-filter: blur(4px);
         }
 
         .modal-content {
             background: white;
-            border-radius: 32px;
-            padding: 28px;
-            max-width: 500px;
-            width: 100%;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 90%;
+            width: 480px;
             max-height: 80vh;
             overflow-y: auto;
         }
 
-        .modal-content h3 {
-            margin-bottom: 20px;
-            color: #1e293b;
-        }
-
         .folder-option {
-            padding: 10px 14px;
-            margin: 6px 0;
+            padding: 8px 12px;
             cursor: pointer;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.2s;
+            border-radius: 10px;
+            margin: 2px 0;
+            font-size: 13px;
         }
 
         .folder-option:hover {
@@ -484,21 +504,40 @@
         }
 
         .folder-option.selected {
-            background: #3b82f6;
+            background: #2c7da0;
             color: white;
+        }
+
+        .fullscreen-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4000;
+        }
+
+        .fullscreen-viewer img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
         }
 
         .toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             background: #1e293b;
             color: white;
-            padding: 12px 24px;
-            border-radius: 60px;
-            z-index: 2000;
-            font-size: 0.85rem;
+            padding: 10px 20px;
+            border-radius: 40px;
+            z-index: 5000;
+            font-size: 13px;
             animation: fadeOut 3s forwards;
         }
 
@@ -508,52 +547,45 @@
             100% { opacity: 0; visibility: hidden; }
         }
 
-        @media (max-width: 1024px) {
-            .table-header, .doc-row {
-                grid-template-columns: 40px 1.5fr 1fr 0.8fr 0.8fr 0.8fr 120px;
-                font-size: 0.7rem;
-            }
+        .hidden {
+            display: none;
         }
 
-        @media (max-width: 768px) {
-            .main-layout {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                max-height: 300px;
-            }
-            .table-header {
-                display: none;
-            }
-            .doc-row {
-                grid-template-columns: 1fr;
-                gap: 8px;
-            }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 280px; }
+            .docs-table th, .docs-table td { padding: 6px 8px; }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 <div id="app"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
     // ==================== MODELO DE DADOS ====================
     function loadData() {
-        if (!localStorage.getItem("empresas")) {
-            localStorage.setItem("empresas", JSON.stringify(["Matriz"]));
-        }
-        if (!localStorage.getItem("users")) {
-            localStorage.setItem("users", JSON.stringify([
-                { username: "admin", password: "admin123", empresa: "Matriz", role: "global_admin" }
-            ]));
-        }
-        if (!localStorage.getItem("pastas")) {
-            localStorage.setItem("pastas", JSON.stringify([]));
-        }
-        if (!localStorage.getItem("documentos")) {
-            localStorage.setItem("documentos", JSON.stringify([]));
-        }
+        if (!localStorage.getItem("empresas")) localStorage.setItem("empresas", JSON.stringify(["Matriz"]));
+        if (!localStorage.getItem("users")) localStorage.setItem("users", JSON.stringify([
+            { username: "admin", password: "admin123", empresa: "Matriz", role: "global_admin" }
+        ]));
+        if (!localStorage.getItem("pastas")) localStorage.setItem("pastas", JSON.stringify([]));
+        if (!localStorage.getItem("documentos")) localStorage.setItem("documentos", JSON.stringify([]));
+        if (!localStorage.getItem("expandedFolders")) localStorage.setItem("expandedFolders", JSON.stringify({}));
     }
 
     function getEmpresas() { return JSON.parse(localStorage.getItem("empresas")); }
@@ -564,24 +596,31 @@
     function savePastas(p) { localStorage.setItem("pastas", JSON.stringify(p)); }
     function getDocumentos() { return JSON.parse(localStorage.getItem("documentos")); }
     function saveDocumentos(d) { localStorage.setItem("documentos", JSON.stringify(d)); }
+    function getExpandedFolders() { return JSON.parse(localStorage.getItem("expandedFolders")) || {}; }
+    function saveExpandedFolders(exp) { localStorage.setItem("expandedFolders", JSON.stringify(exp)); }
 
-    let currentUser = null;
-    let currentEmpresa = "";
-    let currentFolderId = null;
-    let draggingFolderId = null;
-    let settingsOpen = false;
+    let currentUser = null, currentEmpresa = "", currentFolderId = null;
+    let viewMode = "list";
+    let selectedDocs = new Set();
 
     function showToast(msg) {
         let existing = document.querySelector(".toast");
         if (existing) existing.remove();
         const toast = document.createElement("div");
         toast.className = "toast";
-        toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+        toast.innerText = msg;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
     }
 
-    // Funções de pasta
+    function formatFileSize(bytes) {
+        if (!bytes || bytes === 0) return '-';
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(1024));
+        return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
+    }
+
+    // ==================== PASTAS COM EXPANSÃO ====================
     function getFolderPath(folderId) {
         const pastas = getPastas();
         const path = [];
@@ -593,120 +632,413 @@
         return path;
     }
 
-    function isDescendant(ancestorId, descendantId) {
-        if (ancestorId === descendantId) return true;
-        const pastas = getPastas();
-        let currentId = descendantId;
-        for (let i = 0; i < 50; i++) {
-            const folder = pastas.find(p => p.id === currentId);
-            if (!folder || !folder.parentId) return false;
-            if (folder.parentId === ancestorId) return true;
-            currentId = folder.parentId;
+    function renderBreadcrumb() {
+        const container = document.getElementById("breadcrumbArea");
+        if (!currentFolderId) {
+            container.innerHTML = '<span>📁 Raiz</span>';
+            return;
         }
-        return false;
+        const path = getFolderPath(currentFolderId);
+        let html = '<span class="breadcrumb-item" data-id="null">Raiz</span>';
+        path.forEach(folder => {
+            html += `<span> / </span><span class="breadcrumb-item" data-id="${folder.id}">${folder.nome}</span>`;
+        });
+        container.innerHTML = html;
+        document.querySelectorAll('.breadcrumb-item').forEach(el => {
+            el.addEventListener('click', () => {
+                currentFolderId = el.getAttribute('data-id') === 'null' ? null : parseInt(el.getAttribute('data-id'));
+                renderFullUI();
+            });
+        });
     }
 
-    function moveFolder(folderId, newParentId) {
-        if (folderId === newParentId) { showToast("Não é possível mover para si mesma"); return false; }
-        if (isDescendant(folderId, newParentId)) { showToast("Não é possível mover para dentro de si mesma"); return false; }
+    function toggleFolderExpanded(folderId) {
+        const expanded = getExpandedFolders();
+        expanded[folderId] = !expanded[folderId];
+        saveExpandedFolders(expanded);
+        renderFolderTree();
+    }
+
+    function renderFolderTree() {
+        const pastas = getPastas().filter(p => p.empresa === currentEmpresa);
+        const expanded = getExpandedFolders();
         
+        function buildTree(parentId = null, level = 0) {
+            const children = pastas.filter(p => p.parentId === parentId);
+            if (children.length === 0) return '';
+            
+            let html = '<ul class="tree-node" style="list-style:none;">';
+            for (const folder of children) {
+                const hasChildren = pastas.some(p => p.parentId === folder.id);
+                const isExpanded = expanded[folder.id] === true;
+                const isActive = currentFolderId === folder.id;
+                
+                html += `<li>
+                    <div class="tree-item-wrapper ${isActive ? 'active' : ''}" data-id="${folder.id}">
+                        ${hasChildren ? `<span class="expand-icon" data-expand="${folder.id}">${isExpanded ? '▼' : '▶'}</span>` : '<span class="expand-icon"></span>'}
+                        <span class="folder-icon">${isActive ? '📍' : '📁'}</span>
+                        <span class="folder-name" data-id="${folder.id}">${folder.nome}</span>
+                        <div class="folder-actions">
+                            <button class="icon-btn create-subfolder" data-id="${folder.id}" title="Subpasta">+</button>
+                            <button class="icon-btn move-folder" data-id="${folder.id}" title="Mover">↗</button>
+                            <button class="icon-btn delete-folder" data-id="${folder.id}" title="Excluir">🗑</button>
+                        </div>
+                    </div>
+                    ${hasChildren && isExpanded ? `<div class="children-container">${buildTree(folder.id, level + 1)}</div>` : ''}
+                </li>`;
+            }
+            html += '</ul>';
+            return html;
+        }
+        
+        const rootHtml = buildTree(null);
+        document.getElementById("folderTree").innerHTML = rootHtml || '<div style="padding:16px; color:#94a3b8; font-size:13px;">Nenhuma pasta</div>';
+        
+        document.querySelectorAll('.expand-icon').forEach(el => {
+            if (el.getAttribute('data-expand')) {
+                el.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFolderExpanded(parseInt(el.getAttribute('data-expand')));
+                });
+            }
+        });
+        
+        document.querySelectorAll('.tree-item-wrapper').forEach(el => {
+            el.addEventListener('click', (e) => {
+                if (e.target.classList.contains('icon-btn') || e.target.classList.contains('expand-icon')) return;
+                const id = parseInt(el.getAttribute('data-id'));
+                currentFolderId = id;
+                renderFullUI();
+            });
+        });
+        
+        document.querySelectorAll('.create-subfolder').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const parentId = parseInt(btn.getAttribute('data-id'));
+                const name = prompt("Nome da subpasta:");
+                if (name) createFolderAt(name, parentId);
+            });
+        });
+        
+        document.querySelectorAll('.move-folder').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showMoveFolderModal(parseInt(btn.getAttribute('data-id')));
+            });
+        });
+        
+        document.querySelectorAll('.delete-folder').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.getAttribute('data-id'));
+                if (confirm("Excluir pasta e todo conteúdo?")) {
+                    deleteFolderRecursive(id);
+                    if (currentFolderId === id) currentFolderId = null;
+                    renderFullUI();
+                    showToast("Pasta removida");
+                }
+            });
+        });
+    }
+    
+    function createFolderAt(nome, parentId) {
+        if (!nome.trim()) return;
         const pastas = getPastas();
-        const folderIndex = pastas.findIndex(p => p.id === folderId);
-        if (folderIndex !== -1) {
-            pastas[folderIndex].parentId = newParentId;
+        pastas.push({ id: Date.now(), nome: nome.trim(), empresa: currentEmpresa, parentId: parentId });
+        savePastas(pastas);
+        renderFullUI();
+        showToast(`Pasta "${nome}" criada`);
+    }
+    
+    function deleteFolderRecursive(folderId) {
+        const pastas = getPastas();
+        const docs = getDocumentos();
+        pastas.filter(p => p.parentId === folderId).forEach(sp => deleteFolderRecursive(sp.id));
+        savePastas(pastas.filter(p => p.id !== folderId));
+        saveDocumentos(docs.filter(d => d.pastaId !== folderId));
+    }
+    
+    function moveFolder(folderId, newParentId) {
+        if (folderId === newParentId) return false;
+        const pastas = getPastas();
+        const idx = pastas.findIndex(p => p.id === folderId);
+        if (idx !== -1) {
+            pastas[idx].parentId = newParentId;
             savePastas(pastas);
-            showToast("Pasta movida com sucesso!");
-            render();
+            showToast("Pasta movida");
+            renderFullUI();
             return true;
         }
         return false;
     }
-
-    function deleteFolderRecursive(folderId) {
-        const pastas = getPastas();
-        const docs = getDocumentos();
-        const subPastas = pastas.filter(p => p.parentId === folderId);
-        subPastas.forEach(sp => deleteFolderRecursive(sp.id));
-        const newDocs = docs.filter(d => d.pastaId !== folderId);
-        const newPastas = pastas.filter(p => p.id !== folderId);
-        savePastas(newPastas);
-        saveDocumentos(newDocs);
-    }
-
-    function createFolder(nome) {
-        if (!nome.trim()) { showToast("Digite o nome da pasta"); return; }
-        const pastas = getPastas();
-        pastas.push({
-            id: Date.now(),
-            nome: nome.trim(),
-            empresa: currentEmpresa,
-            parentId: currentFolderId
-        });
-        savePastas(pastas);
-        render();
-        showToast(`Pasta "${nome}" criada`);
-    }
-
-    // Funções de documento
-    function renameDocument(docId, newName) {
-        if (!newName.trim()) return;
-        const docs = getDocumentos();
-        const doc = docs.find(d => d.id === docId);
-        if (doc) {
-            doc.nome = newName.trim();
-            saveDocumentos(docs);
-            render();
-            showToast("Documento renomeado");
-        }
-    }
-
-    function moveDocumentToFolder(docId, targetFolderId) {
-        const docs = getDocumentos();
-        const doc = docs.find(d => d.id === docId);
-        if (doc) {
-            doc.pastaId = targetFolderId;
-            saveDocumentos(docs);
-            render();
-            showToast("Documento movido");
-        }
-    }
-
-    async function processFileUpload(file) {
-        if (!currentFolderId && currentFolderId !== 0) { showToast("Selecione uma pasta"); return; }
-        if (!file) return;
+    
+    function showMoveFolderModal(folderId) {
+        const pastas = getPastas().filter(p => p.empresa === currentEmpresa && p.id !== folderId);
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content"><h3 style="margin-bottom:16px;">Mover Pasta</h3><div id="folderSelectList" style="max-height:300px; overflow-y:auto;"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMove" class="btn-success">Mover</button><button id="cancelMove" class="btn-outline">Cancelar</button></div></div>`;
+        document.body.appendChild(modal);
         
-        let base64Data = null;
-        let fileType = file.type;
-        let fileName = file.name;
-        let fileSize = file.size;
-        
-        if (file.type.startsWith("image/")) {
-            base64Data = await resizeImage(file, 1200);
-            fileType = "image/jpeg";
-            fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
-        } else {
-            base64Data = await readFileAsBase64(file);
-        }
-        
-        if (base64Data) {
-            const docs = getDocumentos();
-            docs.push({
-                id: Date.now(),
-                nome: fileName,
-                base64: base64Data,
-                tipo: fileType,
-                tamanho: fileSize,
-                pastaId: currentFolderId,
-                empresa: currentEmpresa,
-                usuario: currentUser.username,
-                data: new Date().toISOString()
+        function buildOptions(parentId = null, level = 0) {
+            let html = '';
+            pastas.filter(p => p.parentId === parentId).forEach(f => {
+                html += `<div class="folder-option" data-id="${f.id}" style="padding-left:${level * 20 + 12}px">📁 ${f.nome}</div>`;
+                html += buildOptions(f.id, level + 1);
             });
-            saveDocumentos(docs);
-            render();
-            showToast("Documento enviado!");
+            return html;
+        }
+        document.getElementById('folderSelectList').innerHTML = `<div class="folder-option" data-id="null" style="padding:8px 12px;">📁 Raiz</div>` + buildOptions(null, 1);
+        
+        document.querySelectorAll('.folder-option').forEach(opt => opt.addEventListener('click', function() {
+            document.querySelectorAll('.folder-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+        }));
+        document.getElementById('confirmMove').onclick = () => {
+            const selected = document.querySelector('.folder-option.selected');
+            if (selected) moveFolder(folderId, selected.getAttribute('data-id') === 'null' ? null : parseInt(selected.getAttribute('data-id')));
+            modal.remove();
+        };
+        document.getElementById('cancelMove').onclick = () => modal.remove();
+    }
+    
+    // ==================== DOCUMENTOS ====================
+    function renderDocuments() {
+        if (!currentFolderId) {
+            document.getElementById("docsContainer").innerHTML = '<div style="padding:40px; text-align:center; color:#94a3b8;">📁 Selecione uma pasta</div>';
+            return;
+        }
+        const docs = getDocumentos().filter(d => d.pastaId === currentFolderId && d.empresa === currentEmpresa);
+        
+        if (viewMode === "list") {
+            let html = `<table class="docs-table">
+                <thead>
+                    <tr><th style="width:28px"><input type="checkbox" id="selectAllCheckbox"></th><th>Nome</th><th>Tipo</th><th>Tamanho</th><th>Criação</th><th>Criador</th><th>Edição</th><th>Editor</th><th style="width:120px">Ações</th></tr>
+                </thead>
+                <tbody>`;
+            docs.forEach(doc => {
+                const isImage = doc.tipo?.startsWith("image/");
+                const checked = selectedDocs.has(doc.id) ? 'checked' : '';
+                html += `<tr data-doc-id="${doc.id}">
+                    <td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}></td>
+                    <td><strong style="font-size:12px;">${doc.nome.length > 35 ? doc.nome.substring(0, 32) + '...' : doc.nome}</strong></td>
+                    <td>${isImage ? '🖼️ Imagem' : '📄 Documento'}</td>
+                    <td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td>
+                    <td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}</td>
+                    <td>${doc.criadoPor || doc.modifiedBy || "sistema"}</td>
+                    <td>${new Date(doc.data).toLocaleDateString()}</td>
+                    <td>${doc.modifiedBy || "-"}</td>
+                    <td class="action-buttons">
+                        <button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button>
+                        <button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button>
+                        <button class="action-icon delete-doc" data-id="${doc.id}" title="Excluir">🗑️</button>
+                        <button class="action-icon move-doc" data-id="${doc.id}" title="Mover">📂</button>
+                        <a href="${doc.base64}" download="${doc.nome}" class="action-icon" style="text-decoration:none;" title="Download">⬇️</a>
+                    </td>
+                </tr>`;
+            });
+            html += `</tbody></table>`;
+            document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
+            
+            document.getElementById('selectAllCheckbox')?.addEventListener('change', (e) => {
+                docs.forEach(d => e.target.checked ? selectedDocs.add(d.id) : selectedDocs.delete(d.id));
+                renderDocuments();
+                updateMultiActionBar();
+            });
+        } else {
+            let html = '<div class="docs-grid">';
+            docs.forEach(doc => {
+                const isImage = doc.tipo?.startsWith("image/");
+                const checked = selectedDocs.has(doc.id) ? 'checked' : '';
+                html += `<div class="grid-card">
+                            <input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}>
+                            <div class="grid-preview">${isImage ? '🖼️' : '📄'}</div>
+                            <div style="font-size:12px; font-weight:500;">${doc.nome.substring(0, 25)}</div>
+                            <div style="font-size:10px; color:#64748b;">${new Date(doc.data).toLocaleDateString()}</div>
+                            <div class="action-buttons">
+                                <button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}">✏️</button>
+                                <button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}">👁️</button>
+                                <button class="action-icon delete-doc" data-id="${doc.id}">🗑️</button>
+                                <a href="${doc.base64}" download="${doc.nome}" class="action-icon">⬇️</a>
+                            </div>
+                        </div>`;
+            });
+            html += '</div>';
+            document.getElementById("docsContainer").innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
+        }
+        
+        // Eventos dos checkboxes
+        document.querySelectorAll('.doc-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const id = parseInt(cb.getAttribute('data-id'));
+                if (cb.checked) selectedDocs.add(id);
+                else selectedDocs.delete(id);
+                updateMultiActionBar();
+                if (viewMode === "list") {
+                    const selectAll = document.getElementById('selectAllCheckbox');
+                    if (selectAll) selectAll.checked = selectedDocs.size === docs.length && docs.length > 0;
+                }
+            });
+        });
+        
+        document.querySelectorAll('.rename-doc').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                const oldName = btn.getAttribute('data-name');
+                const newName = prompt("Novo nome:", oldName);
+                if (newName?.trim()) {
+                    let docs = getDocumentos();
+                    const doc = docs.find(d => d.id === id);
+                    if (doc) { doc.nome = newName.trim(); doc.modifiedBy = currentUser.username; doc.data = new Date().toISOString(); saveDocumentos(docs); renderDocuments(); showToast("Renomeado"); }
+                }
+            });
+        });
+        
+        document.querySelectorAll('.view-doc').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                const base64 = btn.getAttribute('data-base64');
+                if (type?.startsWith('image/')) {
+                    const viewer = document.createElement('div');
+                    viewer.className = 'fullscreen-viewer';
+                    viewer.innerHTML = `<img src="${base64}"><button style="position:fixed; top:20px; right:20px; background:white; border:none; padding:8px 20px; border-radius:30px; cursor:pointer;">Fechar</button>`;
+                    viewer.querySelector('button').onclick = () => viewer.remove();
+                    document.body.appendChild(viewer);
+                } else {
+                    showToast("Visualização disponível apenas para imagens");
+                }
+            });
+        });
+        
+        document.querySelectorAll('.delete-doc').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                if (confirm("Excluir documento?")) {
+                    let docs = getDocumentos().filter(d => d.id !== id);
+                    saveDocumentos(docs);
+                    selectedDocs.delete(id);
+                    renderDocuments();
+                    updateMultiActionBar();
+                    showToast("Documento removido");
+                }
+            });
+        });
+        
+        document.querySelectorAll('.move-doc').forEach(btn => {
+            btn.addEventListener('click', () => showMoveDocsModal([parseInt(btn.getAttribute('data-id'))]));
+        });
+    }
+    
+    function updateMultiActionBar() {
+        const bar = document.getElementById("multiActionBar");
+        const count = selectedDocs.size;
+        document.getElementById("selectedCount").innerText = `${count} documento(s) selecionado(s)`;
+        if (count > 0) {
+            bar.classList.remove("hidden");
+        } else {
+            bar.classList.add("hidden");
         }
     }
-
+    
+    function showMoveDocsModal(docIds) {
+        if (docIds.length === 0) return;
+        const pastas = getPastas().filter(p => p.empresa === currentEmpresa);
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content"><h3 style="margin-bottom:16px;">Mover ${docIds.length} documento(s)</h3><div id="moveDocFolderList" style="max-height:300px; overflow-y:auto;"></div><div style="display:flex; gap:12px; margin-top:20px;"><button id="confirmMoveDocs" class="btn-success">Mover</button><button id="cancelMoveDocs" class="btn-outline">Cancelar</button></div></div>`;
+        document.body.appendChild(modal);
+        
+        function buildOptions(parentId = null, level = 0) {
+            let html = '';
+            pastas.filter(p => p.parentId === parentId).forEach(f => {
+                html += `<div class="folder-option" data-id="${f.id}" style="padding-left:${level * 20 + 12}px">📁 ${f.nome}</div>`;
+                html += buildOptions(f.id, level + 1);
+            });
+            return html;
+        }
+        document.getElementById('moveDocFolderList').innerHTML = buildOptions(null, 0);
+        
+        document.querySelectorAll('.folder-option').forEach(opt => opt.addEventListener('click', function() {
+            document.querySelectorAll('.folder-option').forEach(o => o.classList.remove('selected'));
+            this.classList.add('selected');
+        }));
+        document.getElementById('confirmMoveDocs').onclick = () => {
+            const selected = document.querySelector('.folder-option.selected');
+            if (selected) {
+                const targetId = parseInt(selected.getAttribute('data-id'));
+                let docs = getDocumentos();
+                docIds.forEach(id => {
+                    const doc = docs.find(d => d.id === id);
+                    if (doc) { doc.pastaId = targetId; doc.modifiedBy = currentUser.username; doc.data = new Date().toISOString(); }
+                });
+                saveDocumentos(docs);
+                selectedDocs.clear();
+                renderDocuments();
+                updateMultiActionBar();
+                showToast(`${docIds.length} documento(s) movido(s)`);
+            }
+            modal.remove();
+        };
+        document.getElementById('cancelMoveDocs').onclick = () => modal.remove();
+    }
+    
+    // Upload com barra de progresso
+    async function uploadMultipleFilesWithProgress(files) {
+        if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return; }
+        if (!files || files.length === 0) return;
+        
+        const progressContainer = document.getElementById("progressBarContainer");
+        const progressFill = document.getElementById("progressFill");
+        const progressText = document.getElementById("progressText");
+        
+        progressContainer.classList.add("active");
+        let uploaded = 0;
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const percent = Math.round((i / files.length) * 100);
+            progressFill.style.width = `${percent}%`;
+            progressText.innerText = `Processando: ${i + 1} de ${files.length} - ${file.name}`;
+            
+            let base64Data, fileType = file.type, fileName = file.name;
+            if (file.type.startsWith("image/")) {
+                base64Data = await resizeImage(file, 1200);
+                fileType = "image/jpeg";
+                fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
+            } else {
+                base64Data = await readFileAsBase64(file);
+            }
+            if (base64Data) {
+                const docs = getDocumentos();
+                docs.push({
+                    id: Date.now() + Math.random(),
+                    nome: fileName,
+                    base64: base64Data,
+                    tipo: fileType,
+                    pastaId: currentFolderId,
+                    empresa: currentEmpresa,
+                    data: new Date().toISOString(),
+                    dataCriacao: new Date().toISOString(),
+                    criadoPor: currentUser.username,
+                    modifiedBy: currentUser.username,
+                    tamanho: file.size
+                });
+                saveDocumentos(docs);
+                uploaded++;
+            }
+        }
+        
+        progressFill.style.width = `100%`;
+        progressText.innerText = `Concluído! ${uploaded} arquivo(s) enviado(s)`;
+        setTimeout(() => {
+            progressContainer.classList.remove("active");
+            progressFill.style.width = "0%";
+        }, 2000);
+        
+        renderDocuments();
+        showToast(`${uploaded} arquivo(s) enviado(s)`);
+    }
+    
     function readFileAsBase64(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -715,7 +1047,7 @@
             reader.readAsDataURL(file);
         });
     }
-
+    
     function resizeImage(file, maxSize) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -723,499 +1055,172 @@
                 const img = new Image();
                 img.onload = function() {
                     let width = img.width, height = img.height;
-                    if (width > height && width > maxSize) {
-                        height = (height * maxSize) / width;
-                        width = maxSize;
-                    } else if (height > maxSize) {
-                        width = (width * maxSize) / height;
-                        height = maxSize;
-                    }
+                    if (width > height && width > maxSize) { height = (height * maxSize) / width; width = maxSize; }
+                    else if (height > maxSize) { width = (width * maxSize) / height; height = maxSize; }
                     const canvas = document.createElement("canvas");
-                    canvas.width = width;
-                    canvas.height = height;
+                    canvas.width = width; canvas.height = height;
                     const ctx = canvas.getContext("2d");
                     ctx.drawImage(img, 0, 0, width, height);
-                    resolve(canvas.toDataURL("image/jpeg", 0.85));
+                    canvas.toBlob(blob => {
+                        const reader2 = new FileReader();
+                        reader2.onload = () => resolve(reader2.result);
+                        reader2.readAsDataURL(blob);
+                    }, 'image/jpeg', 0.85);
                 };
                 img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         });
     }
-
-    function formatFileSize(bytes) {
-        if (!bytes) return "0 KB";
-        if (bytes < 1024) return bytes + " B";
-        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
-        return (bytes / 1048576).toFixed(1) + " MB";
-    }
-
-    // Admin
-    function isGlobalAdmin() {
-        return currentUser && currentUser.role === "global_admin" && currentEmpresa === "Matriz";
-    }
-
-    function addEmpresa(nome) {
-        if (!isGlobalAdmin()) return;
-        let empresas = getEmpresas();
-        if (empresas.includes(nome)) { showToast("Empresa já existe"); return; }
-        empresas.push(nome);
-        saveEmpresas(empresas);
-        render();
-        showToast(`Empresa ${nome} criada`);
-    }
-
-    function addUser(username, password, empresa) {
-        if (!isGlobalAdmin()) return;
-        let users = getUsers();
-        if (users.find(u => u.username === username)) { showToast("Usuário já existe"); return; }
-        users.push({ username, password, empresa, role: "user" });
-        saveUsers(users);
-        render();
-        showToast(`Usuário ${username} criado`);
-    }
-
-    // Renderização da árvore de pastas
-    function renderFolderTree(parentId = null, level = 0) {
-        const pastas = getPastas().filter(p => p.empresa === currentEmpresa && p.parentId === parentId);
-        let html = '<ul class="folder-tree" style="list-style:none;">';
-        
-        for (const pasta of pastas) {
-            const children = getPastas().filter(p => p.parentId === pasta.id);
-            const hasChildren = children.length > 0;
-            const isActive = currentFolderId === pasta.id;
-            
-            html += `
-                <li class="tree-node">
-                    <div class="tree-item ${isActive ? 'active' : ''}" data-folder-id="${pasta.id}">
-                        <div class="tree-item-content">
-                            <i class="fas ${hasChildren ? 'fa-folder-open' : 'fa-folder'}"></i>
-                            <span class="folder-name">${pasta.nome}</span>
-                        </div>
-                        <div class="tree-actions">
-                            <button class="move-folder-btn" data-id="${pasta.id}" title="Mover"><i class="fas fa-arrows-alt"></i></button>
-                            <button class="delete-folder-btn" data-id="${pasta.id}" title="Excluir"><i class="fas fa-trash"></i></button>
-                        </div>
-                    </div>
-                    ${hasChildren ? `<div class="children">${renderFolderTree(pasta.id, level + 1)}</div>` : ''}
-                </li>
-            `;
-        }
-        html += '</ul>';
-        return html;
-    }
-
-    // Modal mover documento
-    function showMoveDocModal(docId, docName) {
-        const pastas = getPastas().filter(p => p.empresa === currentEmpresa);
-        const modal = document.createElement("div");
-        modal.className = "modal";
-        
-        function buildOptions(parentId = null, level = 0) {
-            const children = pastas.filter(p => p.parentId === parentId);
-            let html = "";
-            for (const p of children) {
-                html += `<div class="folder-option" data-id="${p.id}" style="padding-left: ${level * 20}px">
-                            <i class="fas fa-folder"></i> ${p.nome}
-                        </div>`;
-                html += buildOptions(p.id, level + 1);
-            }
-            return html;
-        }
-        
-        modal.innerHTML = `
-            <div class="modal-content">
-                <h3><i class="fas fa-folder-open"></i> Mover: ${docName}</h3>
-                <div class="folder-option" data-id="null"><i class="fas fa-home"></i> Raiz da Empresa</div>
-                ${buildOptions(null, 1)}
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button id="confirmMoveDocBtn" style="flex:1; background:#10b981;"><i class="fas fa-check"></i> Mover</button>
-                    <button id="cancelMoveDocBtn" style="flex:1; background:#ef4444;"><i class="fas fa-times"></i> Cancelar</button>
-                </div>
-            </div>
-        `;
+    
+    // ==================== ADMIN ====================
+    function isGlobalAdmin() { return currentUser && currentUser.role === "global_admin" && currentEmpresa === "Matriz"; }
+    
+    function renderAdminModal() {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.innerHTML = `<div class="modal-content"><h3>⚙️ Administração</h3>
+            <h4 style="margin:12px 0 8px;">Empresas</h4><div id="adminEmpresasList" style="margin-bottom:12px;"></div>
+            <input type="text" id="newEmpresaName" placeholder="Nova empresa" style="width:100%; margin-bottom:8px;"><button id="addEmpresaBtn" style="width:100%;">Criar Empresa</button>
+            <h4 style="margin:20px 0 8px;">Usuários</h4><div id="adminUsersList" style="margin-bottom:12px;"></div>
+            <input type="text" id="newUserName" placeholder="Usuário" style="width:100%; margin-bottom:6px;">
+            <input type="password" id="newUserPass" placeholder="Senha" style="width:100%; margin-bottom:6px;">
+            <select id="newUserEmpresaSelect" style="width:100%; margin-bottom:8px;"></select>
+            <button id="addUserBtn" style="width:100%;">Adicionar Usuário</button>
+            <button id="closeAdminBtn" class="btn-outline" style="margin-top:20px; width:100%;">Fechar</button></div>`;
         document.body.appendChild(modal);
         
-        document.querySelectorAll(".folder-option").forEach(opt => {
-            opt.addEventListener("click", () => {
-                document.querySelectorAll(".folder-option").forEach(o => o.classList.remove("selected"));
-                opt.classList.add("selected");
-            });
-        });
+        const refresh = () => {
+            document.getElementById("adminEmpresasList").innerHTML = getEmpresas().map(e => `<div style="padding:4px 0;">🏢 ${e}</div>`).join('');
+            document.getElementById("adminUsersList").innerHTML = getUsers().map(u => `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0;">👤 ${u.username} (${u.empresa}) ${u.role === 'global_admin' ? '⭐' : ''}<button class="del-user" data-user="${u.username}" style="background:#dc2626; padding:2px 10px; border-radius:20px; font-size:11px;">X</button></div>`).join('');
+            document.getElementById("newUserEmpresaSelect").innerHTML = getEmpresas().map(e => `<option value="${e}">${e}</option>`).join('');
+        };
+        refresh();
         
-        document.getElementById("confirmMoveDocBtn")?.addEventListener("click", () => {
-            const selected = document.querySelector(".folder-option.selected");
-            if (selected) {
-                const targetId = selected.getAttribute("data-id") === "null" ? null : parseInt(selected.getAttribute("data-id"));
-                moveDocumentToFolder(docId, targetId);
-                modal.remove();
-            } else {
-                showToast("Selecione um destino");
-            }
-        });
-        document.getElementById("cancelMoveDocBtn")?.addEventListener("click", () => modal.remove());
+        document.getElementById("addEmpresaBtn").onclick = () => {
+            const nome = document.getElementById("newEmpresaName").value.trim();
+            if (nome && !getEmpresas().includes(nome)) { saveEmpresas([...getEmpresas(), nome]); refresh(); showToast("Empresa criada"); }
+        };
+        document.getElementById("addUserBtn").onclick = () => {
+            const u = document.getElementById("newUserName").value.trim(), p = document.getElementById("newUserPass").value.trim(), e = document.getElementById("newUserEmpresaSelect").value;
+            if (u && p && e) { let users = getUsers(); if (!users.find(us => us.username === u)) { users.push({ username: u, password: p, empresa: e, role: "user" }); saveUsers(users); refresh(); showToast("Usuário criado"); } }
+        };
+        document.querySelectorAll(".del-user").forEach(btn => { btn.onclick = () => { saveUsers(getUsers().filter(u => u.username !== btn.getAttribute("data-user"))); refresh(); showToast("Removido"); }; });
+        document.getElementById("closeAdminBtn").onclick = () => modal.remove();
     }
-
-    // Renderização principal
-    function render() {
-        const app = document.getElementById("app");
-        if (!currentUser) {
-            const empresas = getEmpresas();
-            app.innerHTML = `
-                <div style="display:flex; justify-content:center; align-items:center; min-height:100vh;">
-                    <div style="background:white; border-radius:40px; padding:48px; max-width:450px; width:100%; box-shadow:0 20px 40px rgba(0,0,0,0.1);">
-                        <h2 style="text-align:center; margin-bottom:30px;"><i class="fas fa-folder-open"></i> DocManager Pro</h2>
-                        <input type="text" id="loginUser" placeholder="Usuário" style="width:100%; padding:14px; margin-bottom:16px; border-radius:60px; border:1px solid #cbd5e1;">
-                        <input type="password" id="loginPass" placeholder="Senha" style="width:100%; padding:14px; margin-bottom:16px; border-radius:60px; border:1px solid #cbd5e1;">
-                        <select id="empresaSelect" style="width:100%; padding:14px; margin-bottom:20px; border-radius:60px; border:1px solid #cbd5e1;">
-                            <option value="">-- Selecione a empresa --</option>
-                            ${empresas.map(e => `<option value="${e}">${e}</option>`).join('')}
-                        </select>
-                        <button id="btnLogin" style="width:100%; padding:14px; background:#3b82f6; color:white; border:none; border-radius:60px; font-weight:600;"><i class="fas fa-sign-in-alt"></i> Entrar</button>
+    
+    function renderFullUI() {
+        renderFolderTree();
+        renderDocuments();
+        renderBreadcrumb();
+        updateMultiActionBar();
+    }
+    
+    // ==================== RENDER PRINCIPAL ====================
+    function renderMain() {
+        document.getElementById("app").innerHTML = `
+            <div class="main-layout">
+                <div class="sidebar">
+                    <div class="sidebar-header">
+                        <h2>📂 DocManager</h2>
+                        <div class="user-info">👤 ${currentUser.username}<br>🏢 ${currentEmpresa}${isGlobalAdmin() ? ' ⭐ Admin' : ''}</div>
+                    </div>
+                    <div class="folder-tree-container">
+                        <div style="margin-bottom:12px;"><button id="newRootFolderBtn" style="background:#2c7da0; color:white; width:100%;">+ Nova Pasta</button></div>
+                        <div id="folderTree"></div>
+                    </div>
+                    <div class="sidebar-footer">
+                        ${isGlobalAdmin() ? '<button id="adminConfigBtn" class="config-btn">⚙️ Administração</button>' : ''}
+                        <button id="logoutBtn" class="config-btn">🚪 Sair</button>
                     </div>
                 </div>
-            `;
-            document.getElementById("btnLogin")?.addEventListener("click", () => {
-                const username = document.getElementById("loginUser").value.trim();
-                const password = document.getElementById("loginPass").value.trim();
-                const empresa = document.getElementById("empresaSelect").value;
-                const user = getUsers().find(u => u.username === username && u.password === password && u.empresa === empresa);
-                if (user) {
-                    currentUser = user;
-                    currentEmpresa = empresa;
-                    currentFolderId = null;
-                    render();
-                } else {
-                    showToast("Credenciais inválidas");
-                }
-            });
-            return;
-        }
-
-        const pastasRaiz = getPastas().filter(p => p.empresa === currentEmpresa && p.parentId === null);
-        const docs = getDocumentos().filter(d => d.pastaId === currentFolderId && d.empresa === currentEmpresa);
-        const path = getFolderPath(currentFolderId);
-        const isAdmin = isGlobalAdmin();
-
-        app.innerHTML = `
-            <div class="app-container">
-                <div class="header">
-                    <div class="logo">
-                        <h1><i class="fas fa-folder-tree"></i> DocManager Pro</h1>
-                        <p>Gestão Documental Multi-Empresa</p>
-                    </div>
-                    <div class="user-info">
-                        <div class="empresa-badge"><i class="fas fa-building"></i> ${currentEmpresa}</div>
-                        <div class="empresa-badge"><i class="fas fa-user"></i> ${currentUser.username}</div>
-                        ${isAdmin ? '<span class="admin-badge"><i class="fas fa-crown"></i> Admin</span>' : ''}
-                        <button id="logoutBtn" class="btn-icon"><i class="fas fa-sign-out-alt"></i> Sair</button>
-                    </div>
-                </div>
-                
-                <div class="main-layout">
-                    <!-- Sidebar esquerda -->
-                    <div class="sidebar">
-                        <div class="folders-area">
-                            <div class="section-title">
-                                <i class="fas fa-folder-tree"></i> MEUS DOCUMENTOS
-                            </div>
-                            <div id="folderTreeContainer">
-                                ${renderFolderTree()}
-                                ${pastasRaiz.length === 0 ? '<div style="text-align:center; color:#94a3b8; padding:20px;"><i class="fas fa-folder-open"></i><p>Nenhuma pasta</p></div>' : ''}
-                            </div>
-                            <div style="margin-top: 20px;">
-                                <div style="display:flex; gap:8px;">
-                                    <input type="text" id="newFolderName" placeholder="Nova pasta" style="flex:2; padding:10px 14px; border-radius:60px; border:1px solid #cbd5e1;">
-                                    <button id="createFolderBtn" style="background:#3b82f6; border:none; border-radius:60px; padding:0 16px; color:white;"><i class="fas fa-plus"></i></button>
-                                </div>
-                            </div>
+                <div class="main-content">
+                    <div class="top-bar">
+                        <div class="breadcrumb-area" id="breadcrumbArea"></div>
+                        <div class="upload-group">
+                            <button id="cameraUploadBtn" class="upload-btn">📷 Câmera</button>
+                            <button id="galleryUploadBtn" class="upload-btn">🖼️ Galeria</button>
+                            <button id="fileUploadBtn" class="upload-btn">📎 Arquivo</button>
                         </div>
-                        
-                        <div class="settings-area">
-                            <button class="settings-toggle" id="settingsToggle">
-                                <span><i class="fas fa-cog"></i> Configurações</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="settings-panel" id="settingsPanel">
-                                ${isAdmin ? `
-                                    <h4 style="margin-bottom:10px;"><i class="fas fa-building"></i> Empresas</h4>
-                                    <input type="text" id="newEmpresa" placeholder="Nova empresa">
-                                    <button id="addEmpresaBtn"><i class="fas fa-plus"></i> Criar Empresa</button>
-                                    <div id="empresasList" style="margin-bottom:16px; display:flex; flex-wrap:wrap; gap:6px;">
-                                        ${getEmpresas().map(e => `<span style="background:#e2e8f0; padding:4px 12px; border-radius:40px; font-size:0.7rem;"><i class="fas fa-building"></i> ${e}</span>`).join('')}
-                                    </div>
-                                    <h4 style="margin-bottom:10px;"><i class="fas fa-users"></i> Usuários</h4>
-                                    <input type="text" id="newUser" placeholder="Usuário">
-                                    <input type="password" id="newPass" placeholder="Senha">
-                                    <select id="userEmpresa">${getEmpresas().map(e => `<option value="${e}">${e}</option>`).join('')}</select>
-                                    <button id="addUserBtn"><i class="fas fa-user-plus"></i> Adicionar</button>
-                                    <div id="usersList" style="margin-top:12px;"></div>
-                                ` : '<p style="color:#64748b; text-align:center;">Apenas administrador pode gerenciar empresas e usuários</p>'}
-                            </div>
+                        <div class="view-controls">
+                            <button id="listViewBtn" class="view-btn ${viewMode === 'list' ? 'active' : ''}">📋 Lista</button>
+                            <button id="gridViewBtn" class="view-btn ${viewMode === 'grid' ? 'active' : ''}">🔲 Grade</button>
                         </div>
                     </div>
                     
-                    <!-- Área de documentos -->
-                    <div class="documents-area">
-                        <div class="breadcrumb">
-                            <span class="breadcrumb-item" data-id="null"><i class="fas fa-home"></i> Raiz</span>
-                            ${path.map(f => `<span><i class="fas fa-chevron-right"></i></span><span class="breadcrumb-item" data-id="${f.id}"><i class="fas fa-folder"></i> ${f.nome}</span>`).join('')}
-                        </div>
-                        
-                        <div class="upload-card">
-                            <i class="fas fa-cloud-upload-alt" style="font-size:2rem; color:#3b82f6;"></i>
-                            <p style="margin-top:8px;">Envie arquivos para esta pasta</p>
-                            <div class="upload-buttons">
-                                <button id="cameraBtn" class="btn-camera"><i class="fas fa-camera"></i> Câmera</button>
-                                <button id="galleryBtn" class="btn-gallery"><i class="fas fa-images"></i> Galeria</button>
-                                <button id="fileBtn" class="btn-file"><i class="fas fa-paperclip"></i> Arquivo</button>
-                            </div>
-                            <input type="file" id="fileInput" accept="image/*,application/pdf" style="display:none;">
-                        </div>
-                        
-                        <div class="documents-table">
-                            <div class="table-header">
-                                <div></div>
-                                <div>Nome do arquivo</div>
-                                <div>Data criação</div>
-                                <div>Usuário</div>
-                                <div>Tamanho</div>
-                                <div>Tipo</div>
-                                <div>Ações</div>
-                            </div>
-                            <div id="documentsList">
-                                ${docs.map(doc => `
-                                    <div class="doc-row">
-                                        <div class="doc-preview">
-                                            ${doc.tipo?.startsWith('image/') ? `<img src="${doc.base64}" style="width:32px; height:32px; border-radius:8px; object-fit:cover;">` : '<i class="fas fa-file-pdf" style="font-size:1.2rem;"></i>'}
-                                        </div>
-                                        <div class="doc-name">${doc.nome}</div>
-                                        <div class="doc-meta">${new Date(doc.data).toLocaleDateString()}</div>
-                                        <div class="doc-meta">${doc.usuario || currentUser.username}</div>
-                                        <div class="doc-meta">${formatFileSize(doc.tamanho)}</div>
-                                        <div class="doc-meta">${doc.tipo?.split('/')[1] || 'arquivo'}</div>
-                                        <div class="doc-actions">
-                                            <button class="btn-share" data-id="${doc.id}" data-name="${doc.nome}" title="Compartilhar"><i class="fas fa-share-alt"></i></button>
-                                            <button class="btn-rename" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear"><i class="fas fa-pen"></i></button>
-                                            <button class="btn-move-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Mover"><i class="fas fa-folder-open"></i></button>
-                                            <a href="${doc.base64}" download="${doc.nome}" class="btn-download" title="Baixar"><i class="fas fa-download"></i></a>
-                                            <button class="btn-delete" data-id="${doc.id}" title="Excluir"><i class="fas fa-trash"></i></button>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                                ${docs.length === 0 ? '<div class="empty-state"><i class="fas fa-file-alt" style="font-size:3rem;"></i><p>Nenhum documento nesta pasta</p><p>Clique em "Câmera", "Galeria" ou "Arquivo" para adicionar</p></div>' : ''}
-                            </div>
-                        </div>
+                    <!-- Barra de Progresso -->
+                    <div id="progressBarContainer" class="progress-bar-container">
+                        <div class="progress-info" id="progressText">Enviando arquivos...</div>
+                        <div class="progress-bar-wrapper"><div id="progressFill" class="progress-fill"></div></div>
                     </div>
+                    
+                    <!-- Barra de Ações Múltiplas (Topo Esquerdo) -->
+                    <div id="multiActionBar" class="multi-action-bar hidden">
+                        <span class="selected-info">✅ <span id="selectedCount">0</span> documento(s) selecionado(s)</span>
+                        <button id="batchMoveBtn" class="multi-action-btn">📂 Mover Selecionados</button>
+                        <button id="batchDeleteBtn" class="multi-action-btn" style="background:#dc2626;">🗑️ Excluir Selecionados</button>
+                        <button id="clearSelectionBtn" class="multi-action-btn outline">Limpar</button>
+                    </div>
+                    
+                    <div class="documents-container" id="docsContainer"></div>
                 </div>
             </div>
-        `;
+            <input type="file" id="hiddenFileInput" accept="image/*,application/pdf" multiple style="display:none;">`;
         
-        // Eventos
-        document.getElementById("logoutBtn")?.addEventListener("click", () => { currentUser = null; render(); });
-        document.getElementById("createFolderBtn")?.addEventListener("click", () => {
-            createFolder(document.getElementById("newFolderName").value);
-            document.getElementById("newFolderName").value = "";
-        });
+        renderFullUI();
         
-        // Breadcrumb
-        document.querySelectorAll(".breadcrumb-item").forEach(el => {
-            el.addEventListener("click", () => {
-                currentFolderId = el.getAttribute("data-id") === "null" ? null : parseInt(el.getAttribute("data-id"));
-                render();
-            });
-        });
+        document.getElementById("newRootFolderBtn").onclick = () => { const name = prompt("Nome da pasta:"); if (name) createFolderAt(name, currentFolderId); };
+        document.getElementById("logoutBtn").onclick = () => { currentUser = null; renderLogin(); };
+        if (isGlobalAdmin()) document.getElementById("adminConfigBtn").onclick = () => renderAdminModal();
         
-        // Clique nas pastas da árvore
-        document.querySelectorAll(".tree-item").forEach(el => {
-            el.addEventListener("click", (e) => {
-                if (e.target.closest('.tree-actions')) return;
-                const folderId = parseInt(el.getAttribute("data-folder-id"));
-                currentFolderId = folderId;
-                render();
-            });
-        });
+        const fileInput = document.getElementById("hiddenFileInput");
+        document.getElementById("cameraUploadBtn").onclick = () => { fileInput.setAttribute("capture", "environment"); fileInput.setAttribute("accept", "image/*"); fileInput.multiple = false; fileInput.click(); };
+        document.getElementById("galleryUploadBtn").onclick = () => { fileInput.removeAttribute("capture"); fileInput.setAttribute("accept", "image/*"); fileInput.multiple = true; fileInput.click(); };
+        document.getElementById("fileUploadBtn").onclick = () => { fileInput.removeAttribute("capture"); fileInput.setAttribute("accept", "image/*,application/pdf"); fileInput.multiple = true; fileInput.click(); };
+        fileInput.onchange = async (e) => { if (fileInput.files.length) { await uploadMultipleFilesWithProgress(Array.from(fileInput.files)); fileInput.value = ""; } };
         
-        // Mover pasta
-        document.querySelectorAll(".move-folder-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const folderId = parseInt(btn.getAttribute("data-id"));
-                showMoveFolderModal(folderId);
-            });
-        });
+        document.getElementById("listViewBtn").onclick = () => { viewMode = "list"; renderMain(); };
+        document.getElementById("gridViewBtn").onclick = () => { viewMode = "grid"; renderMain(); };
         
-        // Excluir pasta
-        document.querySelectorAll(".delete-folder-btn").forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const folderId = parseInt(btn.getAttribute("data-id"));
-                if (confirm("Excluir pasta e todo seu conteúdo?")) {
-                    deleteFolderRecursive(folderId);
-                    if (currentFolderId === folderId) currentFolderId = null;
-                    render();
-                }
-            });
-        });
-        
-        // Ações de documentos
-        document.querySelectorAll(".btn-delete").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = parseInt(btn.getAttribute("data-id"));
-                if (confirm("Excluir documento?")) {
-                    const newDocs = getDocumentos().filter(d => d.id !== id);
-                    saveDocumentos(newDocs);
-                    render();
-                }
-            });
-        });
-        
-        document.querySelectorAll(".btn-rename").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = parseInt(btn.getAttribute("data-id"));
-                const currentName = btn.getAttribute("data-name");
-                const newName = prompt("Novo nome do arquivo:", currentName);
-                if (newName && newName.trim()) {
-                    renameDocument(id, newName);
-                }
-            });
-        });
-        
-        document.querySelectorAll(".btn-move-doc").forEach(btn => {
-            btn.addEventListener("click", () => {
-                const id = parseInt(btn.getAttribute("data-id"));
-                const name = btn.getAttribute("data-name");
-                showMoveDocModal(id, name);
-            });
-        });
-        
-        document.querySelectorAll(".btn-share").forEach(btn => {
-            btn.addEventListener("click", () => {
-                showToast("Funcionalidade de compartilhamento em desenvolvimento");
-            });
-        });
-        
-        // Upload
-        const fileInput = document.getElementById("fileInput");
-        document.getElementById("cameraBtn")?.addEventListener("click", () => {
-            fileInput.setAttribute("capture", "environment");
-            fileInput.setAttribute("accept", "image/*");
-            fileInput.click();
-        });
-        document.getElementById("galleryBtn")?.addEventListener("click", () => {
-            fileInput.removeAttribute("capture");
-            fileInput.setAttribute("accept", "image/*");
-            fileInput.click();
-        });
-        document.getElementById("fileBtn")?.addEventListener("click", () => {
-            fileInput.removeAttribute("capture");
-            fileInput.setAttribute("accept", "image/*,application/pdf");
-            fileInput.click();
-        });
-        fileInput?.addEventListener("change", async (e) => {
-            if (fileInput.files.length) {
-                await processFileUpload(fileInput.files[0]);
-                fileInput.value = "";
+        document.getElementById("batchMoveBtn").onclick = () => { if (selectedDocs.size) showMoveDocsModal(Array.from(selectedDocs)); };
+        document.getElementById("batchDeleteBtn").onclick = () => {
+            if (selectedDocs.size === 0) return;
+            if (confirm(`Excluir ${selectedDocs.size} documento(s)?`)) {
+                let docs = getDocumentos().filter(d => !selectedDocs.has(d.id));
+                saveDocumentos(docs);
+                selectedDocs.clear();
+                renderDocuments();
+                updateMultiActionBar();
+                showToast(`${selectedDocs.size} documento(s) removido(s)`);
             }
-        });
-        
-        // Settings toggle
-        const settingsToggle = document.getElementById("settingsToggle");
-        const settingsPanel = document.getElementById("settingsPanel");
-        settingsToggle?.addEventListener("click", () => {
-            settingsOpen = !settingsOpen;
-            if (settingsOpen) {
-                settingsPanel.classList.add("open");
-                settingsToggle.querySelector(".fa-chevron-down").style.transform = "rotate(180deg)";
-            } else {
-                settingsPanel.classList.remove("open");
-                settingsToggle.querySelector(".fa-chevron-down").style.transform = "rotate(0deg)";
-            }
-        });
-        
-        // Admin
-        if (isAdmin) {
-            document.getElementById("addEmpresaBtn")?.addEventListener("click", () => {
-                addEmpresa(document.getElementById("newEmpresa").value);
-                document.getElementById("newEmpresa").value = "";
-            });
-            document.getElementById("addUserBtn")?.addEventListener("click", () => {
-                addUser(document.getElementById("newUser").value, document.getElementById("newPass").value, document.getElementById("userEmpresa").value);
-                document.getElementById("newUser").value = "";
-                document.getElementById("newPass").value = "";
-            });
-            const users = getUsers();
-            const usersList = document.getElementById("usersList");
-            if (usersList) {
-                usersList.innerHTML = users.map(u => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:white; padding:8px 12px; border-radius:40px; margin-bottom:6px;">
-                        <span style="font-size:0.8rem;"><i class="fas fa-user"></i> ${u.username} (${u.empresa})</span>
-                        ${u.username !== 'admin' ? `<button class="delete-user-btn" data-user="${u.username}" style="background:#ef4444; border:none; padding:4px 10px; border-radius:40px; color:white; cursor:pointer;"><i class="fas fa-trash"></i></button>` : ''}
-                    </div>
-                `).join('');
-                document.querySelectorAll(".delete-user-btn").forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        let newUsers = getUsers().filter(u => u.username !== btn.getAttribute("data-user"));
-                        saveUsers(newUsers);
-                        render();
-                    });
-                });
-            }
-        }
+        };
+        document.getElementById("clearSelectionBtn").onclick = () => { selectedDocs.clear(); renderMain(); };
     }
     
-    function showMoveFolderModal(folderId) {
-        const pastas = getPastas().filter(p => p.empresa === currentEmpresa && p.id !== folderId);
-        const modal = document.createElement("div");
-        modal.className = "modal";
-        
-        function buildOptions(parentId = null, level = 0) {
-            const children = pastas.filter(p => p.parentId === parentId);
-            let html = "";
-            for (const p of children) {
-                html += `<div class="folder-option" data-id="${p.id}" style="padding-left: ${level * 20}px">
-                            <i class="fas fa-folder"></i> ${p.nome}
-                        </div>`;
-                html += buildOptions(p.id, level + 1);
-            }
-            return html;
-        }
-        
-        modal.innerHTML = `
-            <div class="modal-content">
-                <h3><i class="fas fa-arrows-alt"></i> Mover Pasta</h3>
-                <div class="folder-option" data-id="null"><i class="fas fa-home"></i> Raiz da Empresa</div>
-                ${buildOptions(null, 1)}
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button id="confirmMoveFolderBtn" style="flex:1; background:#10b981;"><i class="fas fa-check"></i> Mover</button>
-                    <button id="cancelMoveFolderBtn" style="flex:1; background:#ef4444;"><i class="fas fa-times"></i> Cancelar</button>
+    function renderLogin() {
+        const empresas = getEmpresas();
+        document.getElementById("app").innerHTML = `
+            <div class="login-container">
+                <div class="login-card">
+                    <h1>📁 DocManager</h1>
+                    <p style="color:#64748b; margin-bottom:24px;">Multi-Empresa · Gestão Documental</p>
+                    <input type="text" id="loginUser" placeholder="Usuário" style="width:100%; margin-bottom:12px;">
+                    <input type="password" id="loginPass" placeholder="Senha" style="width:100%; margin-bottom:12px;">
+                    <select id="loginEmpresa" style="width:100%; margin-bottom:20px;">${empresas.map(e => `<option value="${e}">${e}</option>`).join('')}</select>
+                    <button id="doLogin" style="width:100%;">Entrar</button>
+                    <p style="margin-top:16px; font-size:12px; color:#94a3b8;">admin / admin123</p>
                 </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-        
-        document.querySelectorAll(".folder-option").forEach(opt => {
-            opt.addEventListener("click", () => {
-                document.querySelectorAll(".folder-option").forEach(o => o.classList.remove("selected"));
-                opt.classList.add("selected");
-            });
-        });
-        
-        document.getElementById("confirmMoveFolderBtn")?.addEventListener("click", () => {
-            const selected = document.querySelector(".folder-option.selected");
-            if (selected) {
-                const targetId = selected.getAttribute("data-id") === "null" ? null : parseInt(selected.getAttribute("data-id"));
-                moveFolder(folderId, targetId);
-                modal.remove();
-            } else {
-                showToast("Selecione um destino");
-            }
-        });
-        document.getElementById("cancelMoveFolderBtn")?.addEventListener("click", () => modal.remove());
+            </div>`;
+        document.getElementById("doLogin").onclick = () => {
+            const u = document.getElementById("loginUser").value.trim(), p = document.getElementById("loginPass").value.trim(), e = document.getElementById("loginEmpresa").value;
+            const user = getUsers().find(us => us.username === u && us.password === p && us.empresa === e);
+            if (user) { currentUser = user; currentEmpresa = e; currentFolderId = null; selectedDocs.clear(); renderMain(); }
+            else showToast("Credenciais inválidas");
+        };
     }
     
     loadData();
-    render();
+    renderLogin();
 </script>
 </body>
 </html>
