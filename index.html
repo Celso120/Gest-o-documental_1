@@ -68,7 +68,7 @@
         .action-icon { background: #f1f5f9; border: none; cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: #1e293b; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
         .action-icon:hover { background: #e2e8f0; }
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 3000; backdrop-filter: blur(4px); padding: 16px; }
-        .modal-content { background: white; border-radius: 20px; padding: 20px; max-width: 95%; width: 500px; max-height: 85vh; overflow-y: auto; }
+        .modal-content { background: white; border-radius: 20px; padding: 20px; max-width: 95%; width: 550px; max-height: 85vh; overflow-y: auto; }
         .folder-option { padding: 8px 12px; cursor: pointer; border-radius: 8px; margin: 2px 0; font-size: 12px; color: #1e293b; }
         .folder-option:hover { background: #e0e7ff; }
         .folder-option.selected { background: #2c7da0; color: white; }
@@ -82,6 +82,7 @@
         .history-date { color: #64748b; font-size: 10px; }
         video { width: 100%; border-radius: 8px; background: #000; }
         .page-preview { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px; margin: 5px 0; border-radius: 8px; }
+        .camera-select { margin-bottom: 12px; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; }
         @media (min-width: 768px) {
             .main-layout { flex-direction: row; }
             .sidebar { width: 300px; max-height: 100vh; border-radius: 0 20px 20px 0; box-shadow: 4px 0 20px rgba(0,0,0,0.05); }
@@ -348,7 +349,7 @@
         const docs = getDocumentos().filter(d => d.pastaId === currentFolderId && d.empresa === currentEmpresa);
         
         if (viewMode === "list") {
-            let html = `<table class="docs-table"><thead><tr><th style="width:28px"><input type="checkbox" id="selectAllCheckbox"></th><th>Nome</th><th>Tipo</th><th>Tamanho</th><th>Criação</th><th>Criador</th><th>Edição</th><th style="white-space:nowrap;">Ações</th></tr></thead><tbody>`;
+            let html = `<table class="docs-table"><thead><tr><th style="width:28px"><input type="checkbox" id="selectAllCheckbox"></th><th>Nome</th><th>Tipo</th><th>Tamanho</th><th>Criação</th><th>Criador</th><th>Edição</th><th style="white-space:nowrap;">Ações</th><tr></thead><tbody>`;
             docs.forEach(doc => {
                 const isImage = doc.tipo?.startsWith("image/");
                 const checked = selectedDocs.has(doc.id) ? 'checked' : '';
@@ -515,21 +516,64 @@
         });
     }
     
-    // ==================== CÂMARA COM NOMEAÇÃO ====================
-    async function startCameraCapture() {
-        cameraPages = [];
+    // ==================== CÂMARA COM SELEÇÃO DE DISPOSITIVO ====================
+    async function getCameraDevices() {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.filter(device => device.kind === 'videoinput');
+    }
+    
+    async function startCameraWithDevice(deviceId) {
         if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); }
         try {
-            currentStream = await navigator.mediaDevices.getUserMedia({ video: true });
-        } catch (err) { showToast("Erro ao acessar câmera: " + err.message); return; }
+            const constraints = { video: deviceId ? { deviceId: { exact: deviceId } } : true };
+            currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+            return currentStream;
+        } catch (err) {
+            showToast("Erro ao acessar câmera: " + err.message);
+            return null;
+        }
+    }
+    
+    async function startCameraCapture() {
+        cameraPages = [];
+        if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
+        
+        const devices = await getCameraDevices();
         
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content" style="max-width:500px;"><h3 style="margin-bottom:12px;">📸 Capturar Páginas</h3><input type="text" id="docNameInput" placeholder="Nome do documento (opcional)" style="margin-bottom:10px;"><video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:12px; background:#000;"></video><div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;"><button id="capturePageBtn" style="flex:1; background:#2c7da0; color:white;">📷 Capturar</button><button id="finishCaptureBtn" style="flex:1; background:#10b981; color:white;">✅ Salvar PDF (0 págs)</button></div><div id="pagesPreview" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div><button id="cancelCaptureBtn" style="width:100%;">Cancelar</button></div>`;
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width:550px;">
+                <h3 style="margin-bottom:12px;">📸 Capturar Páginas</h3>
+                <input type="text" id="docNameInput" placeholder="Nome do documento (opcional)" style="margin-bottom:10px;">
+                <select id="cameraSelect" class="camera-select">
+                    ${devices.map((device, idx) => `<option value="${device.deviceId}" ${idx === 0 ? 'selected' : ''}>${device.label || `Câmera ${idx + 1}${device.label?.toLowerCase().includes('front') ? ' (Frontal)' : device.label?.toLowerCase().includes('back') ? ' (Traseira)' : ''}`}</option>`)}
+                </select>
+                <video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:12px; background:#000;"></video>
+                <div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;">
+                    <button id="capturePageBtn" style="flex:1; background:#2c7da0; color:white;">📷 Capturar Página</button>
+                    <button id="finishCaptureBtn" style="flex:1; background:#10b981; color:white;">✅ Salvar PDF (0 págs)</button>
+                </div>
+                <div id="pagesPreview" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div>
+                <button id="cancelCaptureBtn" style="width:100%;">Cancelar</button>
+            </div>
+        `;
         document.body.appendChild(modal);
         
         const video = modal.querySelector('#cameraVideo');
-        video.srcObject = currentStream;
+        const cameraSelect = modal.querySelector('#cameraSelect');
+        
+        const startVideo = async (deviceId) => {
+            const stream = await startCameraWithDevice(deviceId);
+            if (stream) video.srcObject = stream;
+        };
+        
+        await startVideo(devices[0]?.deviceId);
+        
+        cameraSelect.addEventListener('change', async () => {
+            await startVideo(cameraSelect.value);
+        });
         
         const updateUI = () => {
             modal.querySelector('#finishCaptureBtn').innerHTML = `✅ Salvar PDF (${cameraPages.length} págs)`;
@@ -617,17 +661,11 @@
         document.getElementById("addUserBtn").onclick = () => { const u = document.getElementById("newUserName").value.trim(), p = document.getElementById("newUserPass").value.trim(), e = document.getElementById("newUserEmpresaSelect").value; if (u && p && e) { let users = getUsers(); if (!users.find(us => us.username === u)) { users.push({ username: u, password: p, empresa: e, role: "user" }); saveUsers(users); refresh(); showToast("Usuário criado"); } } };
         document.querySelectorAll(".del-user").forEach(btn => { btn.onclick = () => { saveUsers(getUsers().filter(u => u.username !== btn.getAttribute("data-user"))); refresh(); showToast("Removido"); }; });
         
-        // Backup
         document.getElementById("backupBtn").onclick = () => backupDatabase();
-        
-        // Restore
         const restoreInput = document.getElementById("restoreFileInput");
         document.getElementById("restoreBtn").onclick = () => restoreInput.click();
         restoreInput.onchange = (e) => { if (e.target.files.length) { restoreDatabase(e.target.files[0]); modal.remove(); } };
-        
-        // Apagar tudo
         document.getElementById("clearDbBtn").onclick = () => { clearDatabase(); modal.remove(); };
-        
         document.getElementById("closeAdminBtn").onclick = () => modal.remove();
     }
     
