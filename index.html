@@ -5,596 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
     <title>DocManager Pro - Sistema Multi-Empresa</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
-            background: #f1f5f9;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .login-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #1a4a6e 0%, #2c7da0 100%);
-            padding: 20px;
-        }
-
-        .login-card {
-            background: white;
-            border-radius: 20px;
-            padding: 32px 24px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-        }
-
-        .login-card h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            color: #1a4a6e;
-        }
-
-        input, select, button {
-            font-size: 14px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            padding: 10px 14px;
-            transition: 0.2s;
-            background: #fff;
-            width: 100%;
-        }
-
-        button {
-            background: #f1f5f9;
-            color: #1e293b;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #e2e8f0;
-        }
-
-        .main-layout {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            background: #f1f5f9;
-        }
-
-        .sidebar {
-            background: white;
-            border-radius: 0;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            max-height: 45%;
-            overflow: hidden;
-        }
-
-        .sidebar-header {
-            padding: 12px 16px;
-            border-bottom: 1px solid #eef2f6;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .sidebar-header h2 {
-            font-size: 16px;
-            color: #1a4a6e;
-        }
-
-        .user-info {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 6px 10px;
-            font-size: 11px;
-        }
-
-        .folder-tree-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 8px;
-            max-height: 200px;
-        }
-
-        .tree-node {
-            list-style: none;
-        }
-
-        .tree-item-wrapper {
-            display: flex;
-            align-items: center;
-            padding: 6px 8px;
-            margin: 2px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.15s;
-            flex-wrap: wrap;
-        }
-
-        .tree-item-wrapper:hover {
-            background: #f1f5f9;
-        }
-
-        .tree-item-wrapper.active {
-            background: #e0f2fe;
-        }
-
-        .expand-icon {
-            width: 20px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 10px;
-            color: #1e293b;
-        }
-
-        .folder-icon {
-            width: 20px;
-            margin-right: 6px;
-            font-size: 14px;
-            color: #1e293b;
-        }
-
-        .folder-name {
-            flex: 1;
-            font-size: 12px;
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .folder-actions {
-            display: flex;
-            gap: 2px;
-            opacity: 0;
-            transition: opacity 0.15s;
-        }
-
-        .tree-item-wrapper:hover .folder-actions {
-            opacity: 1;
-        }
-
-        .icon-btn {
-            background: #f1f5f9;
-            border: none;
-            cursor: pointer;
-            padding: 4px 6px;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #1e293b;
-        }
-
-        .children-container {
-            margin-left: 20px;
-        }
-
-        .sidebar-footer {
-            padding: 10px 12px;
-            border-top: 1px solid #eef2f6;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .config-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background: #f1f5f9;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            color: #1e293b;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            padding: 12px;
-        }
-
-        .top-bar {
-            background: white;
-            border-radius: 16px;
-            padding: 10px 12px;
-            margin-bottom: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-        }
-
-        .breadcrumb-area {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-            font-size: 11px;
-            color: #1e293b;
-        }
-
-        .breadcrumb-item {
-            cursor: pointer;
-            color: #2c7da0;
-            font-weight: 500;
-        }
-
-        .upload-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .upload-btn {
-            background: #f1f5f9;
-            color: #1e293b;
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: 8px;
-            flex: 1;
-            text-align: center;
-        }
-
-        .drag-message {
-            font-size: 10px;
-            color: #64748b;
-            background: #f8fafc;
-            padding: 4px 8px;
-            border-radius: 8px;
-            text-align: center;
-        }
-
-        .view-controls {
-            display: flex;
-            gap: 6px;
-            justify-content: flex-end;
-        }
-
-        .view-btn {
-            background: #f1f5f9;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            color: #1e293b;
-        }
-
-        .view-btn.active {
-            background: #2c7da0;
-            color: white;
-        }
-
-        .progress-bar-container {
-            background: white;
-            border-radius: 12px;
-            padding: 8px 12px;
-            margin-bottom: 12px;
-            display: none;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .progress-bar-container.active {
-            display: flex;
-        }
-
-        .progress-info {
-            font-size: 11px;
-            color: #1e293b;
-        }
-
-        .progress-bar-wrapper {
-            flex: 1;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: #10b981;
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 10px;
-        }
-
-        /* Barra de Ações Múltiplas - lado esquerdo da lista de documentos */
-        .multi-action-bar {
-            background: #f1f5f9;
-            border-radius: 10px;
-            padding: 8px 12px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            border-left: 3px solid #2c7da0;
-        }
-
-        .multi-action-bar .selected-info {
-            font-size: 11px;
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        .multi-action-btn {
-            background: #f1f5f9;
-            color: #1e293b;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 11px;
-            font-weight: 500;
-            width: auto;
-        }
-
-        .multi-action-btn.danger {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .multi-action-btn.danger:hover {
-            background: #fecaca;
-        }
-
-        .documents-container {
-            flex: 1;
-            background: white;
-            border-radius: 16px;
-            overflow: auto;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-            transition: all 0.2s;
-        }
-
-        .documents-container.drag-over {
-            background: #f0f9ff;
-            border: 2px dashed #2c7da0;
-        }
-
-        .docs-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-            display: block;
-            overflow-x: auto;
-        }
-
-        .docs-table thead, .docs-table tbody {
-            display: block;
-        }
-
-        .docs-table tr {
-            display: flex;
-            flex-wrap: wrap;
-            border-bottom: 1px solid #f0f2f5;
-            padding: 8px;
-        }
-
-        .docs-table th, .docs-table td {
-            flex: 1;
-            min-width: 80px;
-            padding: 4px 6px;
-            text-align: left;
-        }
-
-        .docs-table th {
-            background: #fafcff;
-            font-weight: 600;
-            color: #475569;
-            font-size: 10px;
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 10;
-        }
-
-        .action-buttons-cell {
-            white-space: nowrap;
-            width: 1%;
-        }
-
-        .action-buttons-group {
-            display: flex;
-            gap: 4px;
-            flex-wrap: nowrap;
-        }
-
-        .docs-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 10px;
-            padding: 12px;
-        }
-
-        .grid-card {
-            background: white;
-            border: 1px solid #eef2f6;
-            border-radius: 12px;
-            padding: 10px;
-            transition: all 0.2s;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .grid-card .doc-checkbox {
-            position: absolute;
-            top: 6px;
-            left: 6px;
-            width: 14px;
-            height: 14px;
-        }
-
-        .grid-preview {
-            width: 100%;
-            height: 80px;
-            background: #f8fafc;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            margin-bottom: 8px;
-        }
-
-        .action-icon {
-            background: #f1f5f9;
-            border: none;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 11px;
-            color: #1e293b;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            white-space: nowrap;
-        }
-
-        .action-icon:hover {
-            background: #e2e8f0;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            backdrop-filter: blur(4px);
-            padding: 16px;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            max-width: 95%;
-            width: 450px;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .folder-option {
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 8px;
-            margin: 2px 0;
-            font-size: 12px;
-            color: #1e293b;
-        }
-
-        .folder-option:hover {
-            background: #e0e7ff;
-        }
-
-        .folder-option.selected {
-            background: #2c7da0;
-            color: white;
-        }
-
-        .fullscreen-viewer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 4000;
-        }
-
-        .fullscreen-viewer img {
-            max-width: 95%;
-            max-height: 95%;
-            object-fit: contain;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            background: #1e293b;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 40px;
-            z-index: 5000;
-            font-size: 12px;
-            text-align: center;
-            animation: fadeOut 3s forwards;
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .history-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            padding: 8px;
-            border-bottom: 1px solid #eef2f6;
-            font-size: 11px;
-        }
-
-        .history-date {
-            color: #64748b;
-            font-size: 10px;
-        }
-
-        video {
-            width: 100%;
-            border-radius: 8px;
-            background: #000;
-        }
-
-        .page-preview {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #f8fafc;
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 8px;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif; background: #f1f5f9; min-height: 100vh; overflow-x: hidden; }
+        .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1a4a6e 0%, #2c7da0 100%); padding: 20px; }
+        .login-card { background: white; border-radius: 20px; padding: 32px 24px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .login-card h1 { font-size: 28px; margin-bottom: 8px; color: #1a4a6e; }
+        input, select, button { font-size: 14px; border-radius: 8px; border: 1px solid #e2e8f0; padding: 10px 14px; transition: 0.2s; background: #fff; width: 100%; }
+        button { background: #f1f5f9; color: #1e293b; font-weight: 500; border: none; cursor: pointer; }
+        button:hover { background: #e2e8f0; }
+        .main-layout { display: flex; flex-direction: column; height: 100vh; background: #f1f5f9; }
+        .sidebar { background: white; border-radius: 0; display: flex; flex-direction: column; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); max-height: 45%; overflow: hidden; }
+        .sidebar-header { padding: 12px 16px; border-bottom: 1px solid #eef2f6; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .sidebar-header h2 { font-size: 16px; color: #1a4a6e; }
+        .user-info { background: #f8fafc; border-radius: 10px; padding: 6px 10px; font-size: 11px; }
+        .folder-tree-container { flex: 1; overflow-y: auto; padding: 8px; max-height: 200px; }
+        .tree-node { list-style: none; }
+        .tree-item-wrapper { display: flex; align-items: center; padding: 6px 8px; margin: 2px 0; border-radius: 8px; cursor: pointer; transition: all 0.15s; flex-wrap: wrap; }
+        .tree-item-wrapper:hover { background: #f1f5f9; }
+        .tree-item-wrapper.active { background: #e0f2fe; }
+        .expand-icon { width: 20px; text-align: center; cursor: pointer; font-size: 10px; color: #1e293b; }
+        .folder-icon { width: 20px; margin-right: 6px; font-size: 14px; color: #1e293b; }
+        .folder-name { flex: 1; font-size: 12px; font-weight: 500; color: #1e293b; }
+        .folder-actions { display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+        .tree-item-wrapper:hover .folder-actions { opacity: 1; }
+        .icon-btn { background: #f1f5f9; border: none; cursor: pointer; padding: 4px 6px; border-radius: 6px; font-size: 11px; color: #1e293b; }
+        .children-container { margin-left: 20px; }
+        .sidebar-footer { padding: 10px 12px; border-top: 1px solid #eef2f6; display: flex; gap: 8px; flex-wrap: wrap; }
+        .config-btn { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 8px; background: #f1f5f9; border: none; cursor: pointer; font-size: 12px; color: #1e293b; flex: 1; justify-content: center; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 12px; }
+        .top-bar { background: white; border-radius: 16px; padding: 10px 12px; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .breadcrumb-area { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 11px; color: #1e293b; }
+        .breadcrumb-item { cursor: pointer; color: #2c7da0; font-weight: 500; }
+        .upload-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .upload-btn { background: #f1f5f9; color: #1e293b; padding: 6px 12px; font-size: 12px; border-radius: 8px; flex: 1; text-align: center; }
+        .drag-message { font-size: 10px; color: #64748b; background: #f8fafc; padding: 4px 8px; border-radius: 8px; text-align: center; }
+        .view-controls { display: flex; gap: 6px; justify-content: flex-end; }
+        .view-btn { background: #f1f5f9; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; color: #1e293b; }
+        .view-btn.active { background: #2c7da0; color: white; }
+        .progress-bar-container { background: white; border-radius: 12px; padding: 8px 12px; margin-bottom: 12px; display: none; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .progress-bar-container.active { display: flex; }
+        .progress-info { font-size: 11px; color: #1e293b; }
+        .progress-bar-wrapper { flex: 1; height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #10b981; width: 0%; transition: width 0.3s ease; border-radius: 10px; }
+        .multi-action-bar { background: #f1f5f9; border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-left: 3px solid #2c7da0; }
+        .multi-action-bar .selected-info { font-size: 11px; font-weight: 500; color: #1e293b; }
+        .multi-action-btn { background: #f1f5f9; color: #1e293b; border: none; padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 500; width: auto; }
+        .multi-action-btn.danger { background: #fee2e2; color: #dc2626; }
+        .multi-action-btn.danger:hover { background: #fecaca; }
+        .documents-container { flex: 1; background: white; border-radius: 16px; overflow: auto; box-shadow: 0 1px 2px rgba(0,0,0,0.03); transition: all 0.2s; }
+        .documents-container.drag-over { background: #f0f9ff; border: 2px dashed #2c7da0; }
+        .docs-table { width: 100%; border-collapse: collapse; font-size: 11px; display: block; overflow-x: auto; }
+        .docs-table thead, .docs-table tbody { display: block; }
+        .docs-table tr { display: flex; flex-wrap: wrap; border-bottom: 1px solid #f0f2f5; padding: 8px; }
+        .docs-table th, .docs-table td { flex: 1; min-width: 80px; padding: 4px 6px; text-align: left; }
+        .docs-table th { background: #fafcff; font-weight: 600; color: #475569; font-size: 10px; position: sticky; top: 0; background: white; z-index: 10; }
+        .action-buttons-cell { white-space: nowrap; width: 1%; }
+        .action-buttons-group { display: flex; gap: 4px; flex-wrap: nowrap; }
+        .docs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; padding: 12px; }
+        .grid-card { background: white; border: 1px solid #eef2f6; border-radius: 12px; padding: 10px; transition: all 0.2s; cursor: pointer; position: relative; }
+        .grid-card .doc-checkbox { position: absolute; top: 6px; left: 6px; width: 14px; height: 14px; }
+        .grid-preview { width: 100%; height: 80px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 8px; }
+        .action-icon { background: #f1f5f9; border: none; cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 11px; color: #1e293b; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+        .action-icon:hover { background: #e2e8f0; }
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 3000; backdrop-filter: blur(4px); padding: 16px; }
+        .modal-content { background: white; border-radius: 20px; padding: 20px; max-width: 95%; width: 500px; max-height: 85vh; overflow-y: auto; }
+        .folder-option { padding: 8px 12px; cursor: pointer; border-radius: 8px; margin: 2px 0; font-size: 12px; color: #1e293b; }
+        .folder-option:hover { background: #e0e7ff; }
+        .folder-option.selected { background: #2c7da0; color: white; }
+        .fullscreen-viewer { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 4000; }
+        .fullscreen-viewer img { max-width: 95%; max-height: 95%; object-fit: contain; }
+        .toast { position: fixed; bottom: 20px; left: 20px; right: 20px; background: #1e293b; color: white; padding: 10px 16px; border-radius: 40px; z-index: 5000; font-size: 12px; text-align: center; animation: fadeOut 3s forwards; }
+        @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+        .hidden { display: none; }
+        .history-list { max-height: 300px; overflow-y: auto; }
+        .history-item { padding: 8px; border-bottom: 1px solid #eef2f6; font-size: 11px; }
+        .history-date { color: #64748b; font-size: 10px; }
+        video { width: 100%; border-radius: 8px; background: #000; }
+        .page-preview { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px; margin: 5px 0; border-radius: 8px; }
         @media (min-width: 768px) {
             .main-layout { flex-direction: row; }
             .sidebar { width: 300px; max-height: 100vh; border-radius: 0 20px 20px 0; box-shadow: 4px 0 20px rgba(0,0,0,0.05); }
@@ -607,7 +94,6 @@
             .docs-table th, .docs-table td { display: table-cell; padding: 10px 12px; }
             .docs-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; padding: 16px; }
         }
-
         @media (max-width: 480px) {
             .login-card { padding: 24px 20px; }
             .upload-btn { font-size: 11px; padding: 5px 8px; }
@@ -689,6 +175,56 @@
         modal.innerHTML = `<div class="modal-content"><h3 style="margin-bottom:16px;">📖 Histórico: ${docName}</h3><div class="history-list">${history.length === 0 ? '<div style="padding:20px; text-align:center;">Nenhum registro</div>' : history.map(h => `<div class="history-item"><div><strong>${h.action}</strong></div><div>${h.details}</div><div class="history-date">👤 ${h.user} • ${new Date(h.date).toLocaleString()}</div></div>`).join('')}</div><button id="closeHistoryBtn" style="margin-top:20px; width:100%;">Fechar</button></div>`;
         document.body.appendChild(modal);
         document.getElementById('closeHistoryBtn').onclick = () => modal.remove();
+    }
+
+    // ==================== BACKUP E RESTORE ====================
+    function backupDatabase() {
+        const backup = {
+            empresas: getEmpresas(),
+            users: getUsers(),
+            pastas: getPastas(),
+            documentos: getDocumentos(),
+            expandedFolders: getExpandedFolders(),
+            version: "1.0",
+            date: new Date().toISOString()
+        };
+        const dataStr = JSON.stringify(backup, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `docmanager_backup_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Backup criado com sucesso!");
+    }
+
+    function restoreDatabase(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const backup = JSON.parse(e.target.result);
+                if (backup.empresas) saveEmpresas(backup.empresas);
+                if (backup.users) saveUsers(backup.users);
+                if (backup.pastas) savePastas(backup.pastas);
+                if (backup.documentos) saveDocumentos(backup.documentos);
+                if (backup.expandedFolders) saveExpandedFolders(backup.expandedFolders);
+                showToast("Base de dados restaurada com sucesso!");
+                setTimeout(() => location.reload(), 1500);
+            } catch (err) {
+                showToast("Erro ao restaurar: arquivo inválido");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function clearDatabase() {
+        if (confirm("ATENÇÃO: Esta ação irá apagar TODOS os dados (empresas, usuários, pastas e documentos). Esta ação não pode ser desfeita! Continuar?")) {
+            localStorage.clear();
+            loadData();
+            showToast("Base de dados apagada. Recarregando...");
+            setTimeout(() => location.reload(), 1500);
+        }
     }
 
     // ==================== PASTAS ====================
@@ -818,7 +354,7 @@
                 const checked = selectedDocs.has(doc.id) ? 'checked' : '';
                 html += `<tr data-doc-id="${doc.id}"><td><input type="checkbox" class="doc-checkbox" data-id="${doc.id}" ${checked}></td><td><strong>${doc.nome.length > 35 ? doc.nome.substring(0, 32) + '...' : doc.nome}</strong></td><td>${isImage ? '🖼️' : '📄'}</td><td>${formatFileSize(doc.tamanho || (doc.base64?.length * 0.75) || 0)}</td><td>${new Date(doc.dataCriacao || doc.data).toLocaleDateString()}</td><td>${doc.criadoPor || doc.modifiedBy || "sistema"}</td><td>${new Date(doc.data).toLocaleDateString()}</td><td class="action-buttons-cell"><div class="action-buttons-group"><button class="action-icon rename-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Renomear">✏️</button><button class="action-icon view-doc" data-id="${doc.id}" data-type="${doc.tipo}" data-base64="${doc.base64}" title="Visualizar">👁️</button><button class="action-icon history-doc" data-id="${doc.id}" data-name="${doc.nome}" title="Histórico">📖</button><a href="${doc.base64}" download="${doc.nome}" class="action-icon" title="Download">⬇️</a></div></td></tr>`;
             });
-            html += `</tbody></table>`;
+            html += `</tbody>${'耀'}`;
             const container = document.getElementById("docsContainer");
             if (container) container.innerHTML = docs.length ? html : '<div style="padding:40px; text-align:center;">Nenhum documento</div>';
             
@@ -885,13 +421,13 @@
     }
     
     // ==================== UPLOAD ====================
-    async function uploadSingleFile(file) {
+    async function uploadSingleFile(file, customName = null) {
         if (!currentFolderId) { showToast("Selecione uma pasta primeiro"); return false; }
-        let base64Data, fileType = file.type, fileName = file.name;
+        let base64Data, fileType = file.type, fileName = customName || file.name;
         if (file.type.startsWith("image/")) {
             base64Data = await resizeImage(file, 1024);
             fileType = "image/jpeg";
-            fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
+            if (!customName) fileName = fileName.replace(/\.[^/.]+$/, ".jpg") + "_opt.jpg";
         } else {
             base64Data = await readFileAsBase64(file);
         }
@@ -979,7 +515,7 @@
         });
     }
     
-    // ==================== CÂMARA ====================
+    // ==================== CÂMARA COM NOMEAÇÃO ====================
     async function startCameraCapture() {
         cameraPages = [];
         if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); }
@@ -989,14 +525,14 @@
         
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content" style="max-width:500px;"><h3 style="margin-bottom:12px;">📸 Capturar Páginas</h3><video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:12px; background:#000;"></video><div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;"><button id="capturePageBtn" style="flex:1; background:#2c7da0; color:white;">📷 Capturar</button><button id="finishCaptureBtn" style="flex:1; background:#10b981; color:white;">✅ Gerar PDF (0 págs)</button></div><div id="pagesPreview" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div><button id="cancelCaptureBtn" style="width:100%;">Cancelar</button></div>`;
+        modal.innerHTML = `<div class="modal-content" style="max-width:500px;"><h3 style="margin-bottom:12px;">📸 Capturar Páginas</h3><input type="text" id="docNameInput" placeholder="Nome do documento (opcional)" style="margin-bottom:10px;"><video id="cameraVideo" autoplay playsinline style="width:100%; border-radius:12px; background:#000;"></video><div style="display:flex; gap:10px; margin:15px 0; flex-wrap:wrap;"><button id="capturePageBtn" style="flex:1; background:#2c7da0; color:white;">📷 Capturar</button><button id="finishCaptureBtn" style="flex:1; background:#10b981; color:white;">✅ Salvar PDF (0 págs)</button></div><div id="pagesPreview" style="max-height:150px; overflow-y:auto; margin-bottom:10px;"></div><button id="cancelCaptureBtn" style="width:100%;">Cancelar</button></div>`;
         document.body.appendChild(modal);
         
         const video = modal.querySelector('#cameraVideo');
         video.srcObject = currentStream;
         
         const updateUI = () => {
-            modal.querySelector('#finishCaptureBtn').innerHTML = `✅ Gerar PDF (${cameraPages.length} págs)`;
+            modal.querySelector('#finishCaptureBtn').innerHTML = `✅ Salvar PDF (${cameraPages.length} págs)`;
             const preview = modal.querySelector('#pagesPreview');
             preview.innerHTML = cameraPages.map((_, idx) => `<div class="page-preview"><span>📄 Página ${idx+1} capturada</span><button class="remove-page" data-index="${idx}" style="background:#dc2626; color:white; border:none; padding:2px 8px; border-radius:4px;">Remover</button></div>`).join('');
             document.querySelectorAll('.remove-page').forEach(btn => {
@@ -1017,6 +553,9 @@
         modal.querySelector('#finishCaptureBtn').onclick = async () => {
             if (cameraPages.length === 0) { showToast("Capture pelo menos uma página"); return; }
             try {
+                const docName = modal.querySelector('#docNameInput').value.trim();
+                const fileName = docName ? `${docName}.pdf` : `documento_camera_${Date.now()}.pdf`;
+                
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
                 for (let i = 0; i < cameraPages.length; i++) {
@@ -1028,10 +567,10 @@
                     pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
                 }
                 const pdfBlob = pdf.output('blob');
-                await uploadSingleFile(new File([pdfBlob], `documento_camera_${Date.now()}.pdf`, { type: 'application/pdf' }));
+                await uploadSingleFile(new File([pdfBlob], fileName, { type: 'application/pdf' }), fileName);
                 if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; }
                 modal.remove();
-                showToast("PDF gerado com sucesso!");
+                showToast("PDF salvo com sucesso!");
             } catch (error) { showToast("Erro ao criar PDF: " + error.message); }
         };
         modal.querySelector('#cancelCaptureBtn').onclick = () => { if (currentStream) { currentStream.getTracks().forEach(track => track.stop()); currentStream = null; } modal.remove(); };
@@ -1045,20 +584,50 @@
     
     // ==================== ADMIN ====================
     function isGlobalAdmin() { return currentUser && currentUser.role === "global_admin" && currentEmpresa === "Matriz"; }
+    
     function renderAdminModal() {
         const modal = document.createElement('div');
         modal.className = 'modal';
-        modal.innerHTML = `<div class="modal-content"><h3>⚙️ Administração</h3><h4>Empresas</h4><div id="adminEmpresasList"></div><input type="text" id="newEmpresaName" placeholder="Nova empresa"><button id="addEmpresaBtn">Criar Empresa</button><h4>Usuários</h4><div id="adminUsersList"></div><input type="text" id="newUserName" placeholder="Usuário"><input type="password" id="newUserPass" placeholder="Senha"><select id="newUserEmpresaSelect"></select><button id="addUserBtn">Adicionar</button><button id="closeAdminBtn">Fechar</button></div>`;
+        modal.innerHTML = `<div class="modal-content"><h3>⚙️ Administração</h3>
+            <h4 style="margin:12px 0 8px;">Empresas</h4><div id="adminEmpresasList" style="margin-bottom:12px;"></div>
+            <input type="text" id="newEmpresaName" placeholder="Nova empresa" style="margin-bottom:8px;"><button id="addEmpresaBtn">Criar Empresa</button>
+            <h4 style="margin:20px 0 8px;">Usuários</h4><div id="adminUsersList" style="margin-bottom:12px;"></div>
+            <input type="text" id="newUserName" placeholder="Usuário" style="margin-bottom:6px;">
+            <input type="password" id="newUserPass" placeholder="Senha" style="margin-bottom:6px;">
+            <select id="newUserEmpresaSelect" style="margin-bottom:8px;"></select>
+            <button id="addUserBtn">Adicionar Usuário</button>
+            <h4 style="margin:20px 0 8px;">💾 Backup e Restore</h4>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+                <button id="backupBtn" style="flex:1; background:#10b981; color:white;">📥 Backup</button>
+                <button id="restoreBtn" style="flex:1; background:#f59e0b; color:white;">📂 Restaurar</button>
+                <button id="clearDbBtn" style="flex:1; background:#dc2626; color:white;">🗑️ Apagar Tudo</button>
+            </div>
+            <input type="file" id="restoreFileInput" accept=".json" style="display:none;">
+            <button id="closeAdminBtn" style="margin-top:20px;">Fechar</button></div>`;
         document.body.appendChild(modal);
+        
         const refresh = () => {
             document.getElementById("adminEmpresasList").innerHTML = getEmpresas().map(e => `<div>🏢 ${e}</div>`).join('');
-            document.getElementById("adminUsersList").innerHTML = getUsers().map(u => `<div style="display:flex; justify-content:space-between;">👤 ${u.username} (${u.empresa}) ${u.role === 'global_admin' ? '⭐' : ''}<button class="del-user" data-user="${u.username}" style="background:#fee2e2; padding:2px 8px;">X</button></div>`).join('');
+            document.getElementById("adminUsersList").innerHTML = getUsers().map(u => `<div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0;">👤 ${u.username} (${u.empresa}) ${u.role === 'global_admin' ? '⭐' : ''}<button class="del-user" data-user="${u.username}" style="background:#fee2e2; padding:2px 8px; border-radius:20px;">X</button></div>`).join('');
             document.getElementById("newUserEmpresaSelect").innerHTML = getEmpresas().map(e => `<option value="${e}">${e}</option>`).join('');
         };
         refresh();
+        
         document.getElementById("addEmpresaBtn").onclick = () => { const nome = document.getElementById("newEmpresaName").value.trim(); if (nome && !getEmpresas().includes(nome)) { saveEmpresas([...getEmpresas(), nome]); refresh(); showToast("Empresa criada"); } };
         document.getElementById("addUserBtn").onclick = () => { const u = document.getElementById("newUserName").value.trim(), p = document.getElementById("newUserPass").value.trim(), e = document.getElementById("newUserEmpresaSelect").value; if (u && p && e) { let users = getUsers(); if (!users.find(us => us.username === u)) { users.push({ username: u, password: p, empresa: e, role: "user" }); saveUsers(users); refresh(); showToast("Usuário criado"); } } };
         document.querySelectorAll(".del-user").forEach(btn => { btn.onclick = () => { saveUsers(getUsers().filter(u => u.username !== btn.getAttribute("data-user"))); refresh(); showToast("Removido"); }; });
+        
+        // Backup
+        document.getElementById("backupBtn").onclick = () => backupDatabase();
+        
+        // Restore
+        const restoreInput = document.getElementById("restoreFileInput");
+        document.getElementById("restoreBtn").onclick = () => restoreInput.click();
+        restoreInput.onchange = (e) => { if (e.target.files.length) { restoreDatabase(e.target.files[0]); modal.remove(); } };
+        
+        // Apagar tudo
+        document.getElementById("clearDbBtn").onclick = () => { clearDatabase(); modal.remove(); };
+        
         document.getElementById("closeAdminBtn").onclick = () => modal.remove();
     }
     
